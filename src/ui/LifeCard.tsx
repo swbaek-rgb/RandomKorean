@@ -111,7 +111,7 @@ export function LifeCard({ life, onOpenSources }: Props) {
         <Row label="직업" sources={life.occupation.sources} onOpen={onOpenSources}>
           {life.occupation.value}
         </Row>
-        <Row label="주식" sources={life.staple.sources} onOpen={onOpenSources}>
+        <Row label="주식" sources={life.staple.sources} onOpen={onOpenSources} note={life.staple.note}>
           {life.staple.value}
         </Row>
         {d ? (

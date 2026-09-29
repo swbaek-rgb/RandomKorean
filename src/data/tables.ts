@@ -2,6 +2,7 @@ import type { EraId } from '../engine/eras'
 import type { Country, Sex, SocialClass } from '../engine/types'
 import type { Rng } from '../engine/rng'
 import { pickRegion } from './regions'
+import { modernSouthDiet } from './diet'
 
 type W<T> = { v: T; w: number }
 
@@ -421,7 +422,7 @@ export function pickOccupation(rng: Rng, era: EraId, year: number, country: Coun
 
 // ───────────────────── 주식 ─────────────────────
 
-export function pickStaple(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass): { food: string; sources: string[] } {
+export function pickStaple(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass): { food: string; sources: string[]; note?: string } {
   const elite = ['chief', 'jingol', '6dupum', '45dupum', 'noble', 'munbeol', 'yangban', 'goguryeo_elite', 'han_official', 'landlord', 'core', 'q5', 'q4', 'minor_official', 'hyangri', 'jungin', 'intelligentsia'].includes(cls.id)
   const lowest = ['nobi', 'bond', 'cheonmin', 'malgal', 'tenant', 'baekjeong', 'hostile', 'q1'].includes(cls.id)
   switch (era) {
@@ -468,10 +469,10 @@ export function pickStaple(rng: Rng, era: EraId, year: number, country: Country,
         if (famine) return { food: rng.pick(['강냉이죽과 풀죽 (배급 완전 중단)', '옥수수 속대 가루와 산나물', '풀죽과 감자, 장마당 품팔이로 연명']), sources: ['fao_nk', 'nk_famine'] }
         return { food: rng.pick(['옥수수밥과 감자', '강냉이밥과 시래기', remote ? '감자·옥수수와 산나물' : '옥수수밥과 장마당 쌀 소량']), sources: ['fao_nk', 'kdi_nk'] }
       }
-      const eat = year + 15
-      if (eat < 1965) return { food: rng.pick(['보리밥과 김치 (쌀 부족, 보릿고개)', '보리·쌀 혼식과 미국 원조 밀가루 수제비', '보리밥·감자·고구마']), sources: ['kosis_food', 'food_history'] }
-      if (eat < 1980) return { food: rng.pick(['보리 혼식 밥과 김치 (혼분식 장려)', '쌀밥과 김치, 라면·수제비', '쌀·보리 혼식과 된장국']), sources: ['kosis_food'] }
-      if (eat < 2000) return { food: rng.pick(['쌀밥과 김치·국', '쌀밥과 고기 반찬', '쌀밥과 라면·빵']), sources: ['kosis_food'] }
-      return { food: rng.pick(['쌀밥과 김치, 빵·면·배달 음식', '쌀밥과 커피·빵', '쌀밥과 고기, 편의점 도시락', '빵·면·샐러드와 쌀밥']), sources: ['kosis_food'] }
+      // 성장기 = 출생 후 8년 무렵. 1965년 이후는 국민건강영양조사·양곡소비량·가계동향 수치로 문구와 각주를 만든다
+      const grow = year + 8
+      if (grow < 1965) return { food: rng.pick(['보리밥과 김치 (쌀 부족, 보릿고개)', '보리·쌀 혼식과 미국 원조 밀가루 수제비', '보리밥·감자·고구마']), sources: ['kosis_food', 'food_history'], note: '양곡소비량조사 1965년: 1인당 쌀 121kg·보리 50kg. 봄철 보릿고개' }
+      const d = modernSouthDiet(rng, grow, cls)
+      return { food: d.food, sources: d.sources, note: d.note }
   }
 }

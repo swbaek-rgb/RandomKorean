@@ -212,7 +212,7 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
     country: { value: country, sources: cSrc, note: cNote },
     socialClass: { value: cls, sources: clsSrc, note: clsNote },
     occupation: { value: occupation.job, sources: occupation.sources },
-    staple: { value: staple.food, sources: staple.sources },
+    staple: { value: staple.food, sources: staple.sources, note: staple.note },
     family: { value: family, sources: birthYear >= 1925 ? ['kosis_marriage', 'kosis_pop', ...(country.north ? ['un_wpp'] : [])] : ['hh_size', 'coale_demeny'] },
     death: { value: sim.death, sources: sim.deathSources },
     currentAge: sim.death ? null : CURRENT_YEAR - birthYear,
