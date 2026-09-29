@@ -7,6 +7,7 @@ import { pickName } from '../data/names'
 import { baseHazard, eventHazard, eventsAt, hazardParams, pickCause } from '../data/mortality'
 import { divorceHazard, meanFirstMarriageAge, neverMarriedRate, remarriageProb } from '../data/marriage'
 import { birthProbability, maternalMortalityPerBirth } from '../data/maternal'
+import { isPrehistoric, prehistoricChildRole } from '../data/prehistoric'
 
 const shareCache = new Map<string, number>()
 function eraShare(era: Era): number {
@@ -189,7 +190,7 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
   const alive = !sim.death
   if (ageReached < 7) occupation = alive ? { job: '영유아', sources: [] } : { job: '없음 (영유아기에 사망)', sources: [] }
   else if (ageReached < 15) {
-    const young = birthYear >= 1945 ? '학생' : '집안 농사·심부름 거들기'
+    const young = birthYear >= 1945 ? '학생' : isPrehistoric(era.id) ? prehistoricChildRole(rng, era.id, sex, cls) : '집안 농사·심부름 거들기'
     occupation = alive ? { job: young, sources: birthYear >= 1945 ? ['kosis_jobs'] : [] } : { job: `${young} (어린 나이에 사망)`, sources: [] }
   } else if (alive && ageReached < (modernSouth ? 20 : 15)) occupation = { job: '학생', sources: ['kosis_jobs'] }
   else occupation = pickOccupation(rng, era.id, birthYear, country, cls, sex, ageReached)

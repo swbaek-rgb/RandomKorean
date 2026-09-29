@@ -3,6 +3,7 @@ import type { Country, Sex, SocialClass } from '../engine/types'
 import type { Rng } from '../engine/rng'
 import { pickRegion } from './regions'
 import { modernSouthDiet } from './diet'
+import { PREHISTORIC_CLASSES, isPrehistoric, prehistoricOccupation } from './prehistoric'
 
 type W<T> = { v: T; w: number }
 
@@ -157,27 +158,10 @@ export function pickClass(rng: Rng, era: EraId, year: number, country: Country):
   let sources: string[]
   switch (era) {
     case 'paleo':
-      list = [
-        { v: C('band', '무리 구성원', '20~30명 규모 이동 수렵채집 무리. 뚜렷한 계급 없음.', 1, false, false), w: 95 },
-        { v: C('band_lead', '무리의 연장자·우두머리 가계', '경험 많은 사냥꾼·연장자. 세습 권력은 아님.', 0.95, false, false), w: 5 },
-      ]
-      sources = ['paleo_demo', 'jeongok']
-      break
     case 'neo':
-      list = [
-        { v: C('village', '촌락 구성원', '움집 10여 채 규모 정착 촌락. 평등 사회.', 1, false, false), w: 93 },
-        { v: C('village_lead', '촌락 유력 가계', '큰 움집·많은 토기를 가진 가계. 계급 분화 초기.', 0.95, false, false), w: 7 },
-      ]
-      sources = ['jeongok', 'encykorea']
-      break
     case 'bronze':
-      list = [
-        { v: C('chief', '군장·지배 가계', '고인돌을 세울 수 있는 족장 집안. 청동검 소유.', 0.8, false, true), w: 2 },
-        { v: C('warrior', '전사·유력자', '군장을 따르는 무장 계층.', 0.95, false, false), w: 8 },
-        { v: C('commoner', '일반 부족민', '농경·어로 종사. 고인돌 축조 노역 동원.', 1, false, false), w: 80 },
-        { v: C('bond', '예속민·노비', '전쟁 포로나 빚으로 예속. 8조법에 노비 규정 존재.', 1.2, false, false), w: 10 },
-      ]
-      sources = ['encykorea', 'history_db']
+      list = PREHISTORIC_CLASSES[era]
+      sources = era === 'paleo' ? ['prehist_roles', 'paleo_demo'] : ['prehist_roles', 'jeongok']
       break
     case 'samguk':
     case 'nambuk':
@@ -291,19 +275,10 @@ export function pickClass(rng: Rng, era: EraId, year: number, country: Country):
 
 export function pickOccupation(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass, sex: Sex, ageReached: number): { job: string; sources: string[] } {
   const female = sex === 'F'
-  if (era === 'paleo') {
-    return {
-      job: female ? rng.pick(['채집 (도토리·열매·뿌리) 및 소형 동물 사냥', '채집과 가죽 손질', '채집·불 관리']) : rng.pick(['사슴·멧돼지 사냥', '석기 제작 (슴베찌르개·돌날)', '사냥과 어로']),
-      sources: ['paleo_demo'],
-    }
+  if (isPrehistoric(era)) {
+    return { job: prehistoricOccupation(rng, era, cls, sex, ageReached), sources: ['prehist_roles'] }
   }
-  if (era === 'neo') {
-    return {
-      job: female ? rng.pick(['조·기장 밭 경작과 채집', '토기 제작 (빗살무늬토기)', '조개 채취와 그물 짜기']) : rng.pick(['어로 (작살·낚시)', '사냥과 밭 개간', '간석기 제작', '농경 (조·기장·피)']),
-      sources: ['jeongok'],
-    }
-  }
-  const premodern = era === 'bronze' || era === 'samguk' || era === 'nambuk' || era === 'goryeo' || era === 'joseon1' || era === 'joseon2'
+  const premodern = era === 'samguk' || era === 'nambuk' || era === 'goryeo' || era === 'joseon1' || era === 'joseon2'
   if (premodern) {
     const src = ['encykorea', 'history_db']
     switch (cls.id) {
@@ -423,7 +398,7 @@ export function pickOccupation(rng: Rng, era: EraId, year: number, country: Coun
 // ───────────────────── 주식 ─────────────────────
 
 export function pickStaple(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass): { food: string; sources: string[]; note?: string } {
-  const elite = ['chief', 'jingol', '6dupum', '45dupum', 'noble', 'munbeol', 'yangban', 'goguryeo_elite', 'han_official', 'landlord', 'core', 'q5', 'q4', 'minor_official', 'hyangri', 'jungin', 'intelligentsia'].includes(cls.id)
+  const elite = ['chief', 'priest', 'jingol', '6dupum', '45dupum', 'noble', 'munbeol', 'yangban', 'goguryeo_elite', 'han_official', 'landlord', 'core', 'q5', 'q4', 'minor_official', 'hyangri', 'jungin', 'intelligentsia'].includes(cls.id)
   const lowest = ['nobi', 'bond', 'cheonmin', 'malgal', 'tenant', 'baekjeong', 'hostile', 'q1'].includes(cls.id)
   switch (era) {
     case 'paleo':

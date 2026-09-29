@@ -145,6 +145,14 @@ export const SOURCES: Record<string, Source> = {
     kind: 'estimate',
     note: '현대 수렵채집 집단 관찰치: 기대수명 약 30세, 15세까지 생존 약 57%, 15세 도달 시 평균 여명 약 39년.',
   },
+  prehist_roles: {
+    id: 'prehist_roles',
+    title: '선사 시대 분업과 역할 (민족지·고고학 추정)',
+    org: 'Murdock & Provost (1973) · Gurven & Kaplan (2007) · 국립중앙박물관',
+    url: 'https://www.museum.go.kr/',
+    kind: 'estimate',
+    note: '185개 전통 사회의 성별 분업 조사(대형 사냥은 거의 남성, 토기·직조는 대부분 여성, 주술사는 혼재)와 수렵채집 인구학, 한반도 구석기·신석기·청동기 유적 해석을 합쳐 만든 역할표. 계급 비율(구석기 주술사 가계 3%, 청동기 군장 가계 2% 등)과 성별·나이 규칙은 기록이 없어 추정이다.',
+  },
   jeongok: {
     id: 'jeongok',
     title: '한반도 구석기·신석기 유적 연구',
