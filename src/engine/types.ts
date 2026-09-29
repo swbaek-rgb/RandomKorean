@@ -51,6 +51,8 @@ export interface Death {
   cause: string
   /** 사건(전쟁·기근)으로 인한 사망이면 사건명 */
   event?: string
+  /** 출산 관련 사망 */
+  maternal?: boolean
 }
 
 export interface Life {

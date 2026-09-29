@@ -61,7 +61,7 @@ export function baseHazard(age: number, p: HazardParams, sex: Sex, modern: boole
   else if (age < 5) q = p.q1_4
   else if (age < 15) q = p.q5_14
   else q = p.adultA + p.adultS * Math.exp(p.adultB * (age - 15))
-  if (sex === 'F' && age >= 16 && age <= 42) q += p.maternal
+  // 산모 사망은 출산 연동으로 별도 계산한다 (data/maternal.ts). 여기서는 더하지 않는다.
   // 현대 남성 초과사망 (생명표 성별 격차 약 6년)
   if (modern && age >= 15) q *= sex === 'M' ? 1.35 : 0.8
   return Math.min(0.95, q)
@@ -141,7 +141,7 @@ export function pickCause(rng: Rng, age: number, year: number, era: EraId, count
   if (prehistoric) {
     if (age < 1) return { cause: rng.pick(['신생아 감염', '출산 중 사망', '영양 부족', '추위']), sources: ['paleo_demo'] }
     if (age < 15) return { cause: rng.pick(['감염병', '설사병', '굶주림 (겨울)', '사고 (익사·추락)', '맹수 습격']), sources: ['paleo_demo'] }
-    if (age < 45) return { cause: rng.pick(f ? ['출산 합병증', '감염된 상처', '감염병', '굶주림', '무리 간 충돌'] : ['사냥 중 부상', '감염된 상처', '맹수 습격', '무리 간 충돌', '감염병', '익사']), sources: ['paleo_demo'] }
+    if (age < 45) return { cause: rng.pick(f ? ['감염된 상처', '감염병', '굶주림', '무리 간 충돌'] : ['사냥 중 부상', '감염된 상처', '맹수 습격', '무리 간 충돌', '감염병', '익사']), sources: ['paleo_demo'] }
     return { cause: rng.pick(['감염병', '굶주림 (겨울)', '노쇠', '치아 마모·소화 장애', '감염된 상처']), sources: ['paleo_demo'] }
   }
   if (modern) {
@@ -156,14 +156,14 @@ export function pickCause(rng: Rng, age: number, year: number, era: EraId, count
     const core = cls?.id === 'core'
     if (age < 1) return { cause: rng.pick(core ? ['폐렴', '설사병', '조산', '선천 기형'] : ['폐렴', '설사병', '조산', '영양실조']), sources: ['un_wpp'] }
     if (age < 15) return { cause: rng.pick(core ? ['폐렴', '설사병', '결핵', '사고', '백혈병'] : ['폐렴', '설사병', '영양실조', '결핵', '사고']), sources: ['un_wpp'] }
-    if (age < 45) return { cause: rng.pick(['결핵', '사고 (탄광·군)', '간질환', '심장질환', '폐렴', f ? '출산 합병증' : '군 복무 중 사고']), sources: ['un_wpp'] }
+    if (age < 45) return { cause: rng.pick(['결핵', '사고 (탄광·군)', '간질환', '심장질환', '폐렴', f ? '결핵' : '군 복무 중 사고']), sources: ['un_wpp'] }
     return { cause: rng.pick(['뇌졸중', '심장질환', '암 (위암·간암)', '결핵', '폐렴', '만성 폐질환']), sources: ['un_wpp'] }
   }
   // 전근대 · 근대
   const src = year < 1897 ? ['coale_demeny', 'sillok'] : ['chosen_sotokufu']
   if (age < 1) return { cause: rng.pick(['신생아 감염 (배꼽 파상풍)', '설사병', '폐렴', '출산 중 사망', '영양 부족', year > 1800 ? '천연두 (마마)' : '경기 (경풍)']), sources: src }
   if (age < 15) return { cause: rng.weighted([{ v: '천연두 (마마)', w: 25 }, { v: '홍역', w: 20 }, { v: '이질·설사병', w: 20 }, { v: '폐렴', w: 10 }, { v: '익사', w: 5 }, { v: '장티푸스 (염병)', w: 8 }, { v: '기근', w: 7 }, { v: '화상·낙상', w: 5 }]), sources: src }
-  if (age < 45) return { cause: rng.weighted([{ v: '출산 합병증 (산후병)', w: f ? 30 : 0 }, { v: '결핵 (노채)', w: 18 }, { v: '장티푸스 (염병)', w: 15 }, { v: '이질', w: 8 }, { v: '사고 (낙마·익사·화재)', w: f ? 4 : 10 }, { v: '폭력·형벌', w: f ? 1 : 5 }, { v: '역병', w: 10 }, { v: '학질 (말라리아)', w: 6 }, { v: '기근', w: 5 }]), sources: src }
+  if (age < 45) return { cause: rng.weighted([{ v: '결핵 (노채)', w: 18 }, { v: '장티푸스 (염병)', w: 15 }, { v: '이질', w: 8 }, { v: '사고 (낙마·익사·화재)', w: f ? 4 : 10 }, { v: '폭력·형벌', w: f ? 1 : 5 }, { v: '역병', w: 10 }, { v: '학질 (말라리아)', w: 6 }, { v: '기근', w: 5 }]), sources: src }
   if (age < 65) return { cause: rng.weighted([{ v: '중풍 (뇌졸중)', w: 20 }, { v: '결핵', w: 15 }, { v: '위장병 (체증·적취)', w: 15 }, { v: '폐렴', w: 12 }, { v: '역병', w: 12 }, { v: '장티푸스', w: 8 }, { v: '학질', w: 5 }, { v: '기근', w: 5 }, { v: '종기 (등창)', w: 8 }]), sources: src }
   return { cause: rng.weighted([{ v: '노환', w: 40 }, { v: '중풍 (뇌졸중)', w: 20 }, { v: '폐렴', w: 15 }, { v: '위장병', w: 10 }, { v: '역병', w: 8 }, { v: '추위 (겨울)', w: 7 }]), sources: src }
 }

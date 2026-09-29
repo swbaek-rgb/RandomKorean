@@ -124,10 +124,18 @@ export const SOURCES: Record<string, Source> = {
   },
   coale_demeny: {
     id: 'coale_demeny',
-    title: 'Regional Model Life Tables (West)',
-    org: 'Coale & Demeny (1983)',
+    title: 'Regional Model Life Tables (South)',
+    org: 'Coale & Demeny (1983) · 차명수 (2009)',
     kind: 'estimate',
-    note: '전근대 사회의 연령별 사망확률 모델. 기대수명 25~35세 수준(Level 3~6)을 전근대 한반도에 적용. 영아사망 20~30%, 5세 미만 사망 40% 내외.',
+    note: '전근대 사회의 연령별 사망확률 모델. 차명수(2009)가 네 족보의 1700~1899년 기록으로 조선 후기 사망 패턴에 가장 가까운 표로 South 계열 Level 2~3(출생 시 기대여명 23세)을 식별. 영아사망 20~30%, 5세 미만 사망 40% 내외. 이 표는 산모 사망을 충분히 담지 못해, 전근대 여성에게는 출산당 사망률 보정(조선 양반 2.0%, 상민·노비 2.5~3.0%, 고려 이전 2.5~3.0%)을 별도로 더했다.',
+  },
+  maternal_kr: {
+    id: 'maternal_kr',
+    title: '조선 양반 여성의 출산 관련 사망 (행장류 자료)',
+    org: '김두얼 (2012), 경제사학 52',
+    url: 'https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART001673501',
+    kind: 'estimate',
+    note: '양반 정실부인 193명, 출생 838건 중 출산 관련 사망 25건(출산당 약 3.0%). 조선 왕비 46명은 출산 109건 중 4명 사망(3.7%). 이 사이트는 영양 상태 차이를 반영해 조선 양반 2.0%, 상민·노비 2.5~3.0%, 고려 이전 2.5~3.0%로 출산당 산모 사망률을 보정했다. 근대 이후는 통계청 모성사망비.',
   },
   paleo_demo: {
     id: 'paleo_demo',

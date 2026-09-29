@@ -115,7 +115,7 @@ export function LifeCard({ life, onOpenSources }: Props) {
           {life.staple.value}
         </Row>
         {d ? (
-          <Row label="사망" sources={life.death.sources} onOpen={onOpenSources} note={d.event ? `역사 사건: ${d.event}` : undefined}>
+          <Row label="사망" sources={life.death.sources} onOpen={onOpenSources} note={d.event ? `역사 사건: ${d.event}` : d.maternal ? '출산 관련 사망. 시대·계급별 출산당 산모 사망률 보정 적용' : undefined}>
             {d.age}세 · {formatYear(d.year)} · {d.cause}
           </Row>
         ) : (

@@ -6,6 +6,7 @@ import { pickCountry, pickClass, pickOccupation, pickStaple } from '../data/tabl
 import { pickName } from '../data/names'
 import { baseHazard, eventHazard, eventsAt, hazardParams, pickCause } from '../data/mortality'
 import { divorceHazard, meanFirstMarriageAge, neverMarriedRate, remarriageProb } from '../data/marriage'
+import { birthProbability, maternalMortalityPerBirth } from '../data/maternal'
 
 const shareCache = new Map<string, number>()
 function eraShare(era: Era): number {
@@ -23,13 +24,22 @@ function pickBirthYear(rng: Rng, mode: Mode): number {
   return rng.int(era.start, era.end - 1)
 }
 
+interface MarriagePlan {
+  everMarries: boolean
+  mAge: number
+}
+
 interface SimResult {
   death: Death | null
   deathSources: string[]
+  /** 여성이면 시뮬레이션된 출산 횟수 */
+  births: number
 }
 
-function simulateLife(rng: Rng, birthYear: number, country: Country, cls: SocialClass, sex: Sex): SimResult {
+function simulateLife(rng: Rng, birthYear: number, country: Country, cls: SocialClass, sex: Sex, plan: MarriagePlan): SimResult {
   const sources = new Set<string>()
+  const north = !!country.north
+  let births = 0
   for (let age = 0; age <= 110; age++) {
     const year = birthYear + age
     if (year > CURRENT_YEAR) break
@@ -37,6 +47,20 @@ function simulateLife(rng: Rng, birthYear: number, country: Country, cls: Social
     const p = hazardParams(year, era.id, country)
     p.sources.forEach((s) => sources.add(s))
     const modern = year >= 1960
+    // 출산과 산모 사망: 혼인한 여성이 그 해 출산할 확률 × 출산당 사망률
+    if (sex === 'F' && plan.everMarries && age >= plan.mAge && age < 50) {
+      const pBirth = birthProbability(age, tfr(year, north), meanFirstMarriageAge(year, 'F', north))
+      if (rng.chance(pBirth)) {
+        births++
+        const mmr = maternalMortalityPerBirth(year, era.id, cls, north)
+        if (rng.chance(mmr)) {
+          const src = year < 1897 ? 'maternal_kr' : north ? 'un_wpp' : 'kosis_death'
+          sources.add(src)
+          const cause = year < 1897 ? rng.pick(['출산 중 사망 (난산)', '산후병 (산욕열)', '산후 출혈']) : rng.pick(['출산 합병증', '산욕열', '산후 출혈'])
+          return { death: { age, year, cause, maternal: true }, deathSources: [...sources], births }
+        }
+      }
+    }
     let q = baseHazard(age, p, sex, modern) * cls.hazard
     const evs = eventsAt(year, country)
     const evH = evs.map((e) => eventHazard(e, age, sex, cls))
@@ -46,14 +70,14 @@ function simulateLife(rng: Rng, birthYear: number, country: Country, cls: Social
       if (evTotal > 0 && rng.chance(evTotal / total)) {
         const e = evs[rng.weightedIndex(evH)]
         e.sources.forEach((s) => sources.add(s))
-        return { death: { age, year, cause: e.cause, event: e.name }, deathSources: [...sources] }
+        return { death: { age, year, cause: e.cause, event: e.name }, deathSources: [...sources], births }
       }
       const c = age === 110 ? { cause: '노환', sources: [] as string[] } : pickCause(rng, age, year, era.id, country, sex, cls)
       c.sources.forEach((s) => sources.add(s))
-      return { death: { age, year, cause: c.cause }, deathSources: [...sources] }
+      return { death: { age, year, cause: c.cause }, deathSources: [...sources], births }
     }
   }
-  return { death: null, deathSources: [...sources] }
+  return { death: null, deathSources: [...sources], births }
 }
 
 /** 출생 시점 조건으로 15세까지 생존 확률 */
@@ -93,7 +117,7 @@ function spouseDeathAge(rng: Rng, birthYear: number, marriedAt: number, ownSex: 
   return null
 }
 
-function buildFamily(rng: Rng, birthYear: number, country: Country, cls: SocialClass, sex: Sex, death: Death | null, fatherJob: string): Family {
+function buildFamily(rng: Rng, birthYear: number, country: Country, cls: SocialClass, sex: Sex, death: Death | null, fatherJob: string, plan: MarriagePlan, simulatedBirths: number): Family {
   const north = !!country.north
   const elite = ELITE.has(cls.id)
   const f0 = tfr(birthYear, north)
@@ -104,9 +128,8 @@ function buildFamily(rng: Rng, birthYear: number, country: Country, cls: SocialC
   const birthOrder = rng.int(1, siblingsBorn + 1)
   const ageReached = death ? death.age : CURRENT_YEAR - birthYear
 
-  // 혼인 여부: 생애미혼율(45세 시점)로 결정한 뒤, 초혼 나이에 도달했는지 본다
-  const everMarries = !rng.chance(neverMarriedRate(birthYear + 45, sex, north))
-  const mAge = sampleMarriageAge(rng, birthYear, sex, north)
+  // 혼인 여부와 초혼 나이는 사망 시뮬레이션 전에 정해졌다 (산모 사망 계산에 필요)
+  const { everMarries, mAge } = plan
   const married = everMarries && ageReached >= mAge
   let childrenBorn = 0
   let childrenSurvived = 0
@@ -135,7 +158,8 @@ function buildFamily(rng: Rng, birthYear: number, country: Country, cls: SocialC
     const unionEnd = remarried ? Math.min(ageReached, marriedAt + 25) : Math.min(endedAt ?? ageReached, marriedAt + 25)
     const fertileYears = Math.max(0, unionEnd - marriedAt)
     const f1 = tfr(birthYear + marriedAt, north)
-    childrenBorn = Math.min(rng.poisson(f1 * Math.min(1, fertileYears / 12 + 0.3)), Math.floor(fertileYears / 2) + (fertileYears > 0 ? 1 : 0), 12)
+    // 여성은 사망 시뮬레이션에서 연도별로 출산을 굴렸으므로 그 값을 쓴다. 남성은 배우자 기준 근사
+    childrenBorn = sex === 'F' ? Math.min(simulatedBirths, 12) : Math.min(rng.poisson(f1 * Math.min(1, fertileYears / 12 + 0.3)), Math.floor(fertileYears / 2) + (fertileYears > 0 ? 1 : 0), 12)
     const cs = survivalTo15(birthYear + marriedAt + 2, country, 'M').s15
     for (let i = 0; i < childrenBorn; i++) if (rng.chance(cs * (cls.hazard < 0.9 ? 1.05 : 1))) childrenSurvived++
     childrenSurvived = Math.min(childrenSurvived, childrenBorn)
@@ -151,10 +175,14 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
   const { country, sources: cSrc, note: cNote } = pickCountry(rng, era.id, birthYear)
   const { cls, sources: clsSrc, note: clsNote } = pickClass(rng, era.id, birthYear, country)
   const name = pickName(rng, era.id, birthYear, country, cls, sex)
-  const sim = simulateLife(rng, birthYear, country, cls, sex)
+  const plan: MarriagePlan = {
+    everMarries: !rng.chance(neverMarriedRate(birthYear + 45, sex, !!country.north)),
+    mAge: sampleMarriageAge(rng, birthYear, sex, !!country.north),
+  }
+  const sim = simulateLife(rng, birthYear, country, cls, sex, plan)
   const ageReached = sim.death ? sim.death.age : CURRENT_YEAR - birthYear
   const father = pickOccupation(rng, era.id, birthYear - 30 < era.start ? era.start : birthYear - 30, country, cls, 'M', 30)
-  const family = buildFamily(rng, birthYear, country, cls, sex, sim.death, father.job)
+  const family = buildFamily(rng, birthYear, country, cls, sex, sim.death, father.job, plan, sim.births)
 
   let occupation: { job: string; sources: string[] }
   const modernSouth = birthYear >= 1945 && !country.north
