@@ -158,7 +158,7 @@ export default function App() {
         {step === 'start' && (
           <section ref={screenRef} className="screen screen-start" key="start">
             <div className="eyebrow">한반도 · 4만 년</div>
-            <h1 className="title"><SplitWords text="랜덤 한반도인 라이프" /></h1>
+            <h1 className="title"><SplitWords text="한반도 생애 시뮬레이터" /></h1>
             <p className="tagline">4만 년 전부터 2026년까지, 한반도에서 태어난 어떤 한 사람의 삶</p>
 
             <EraStrip mode={mode} />
@@ -210,7 +210,7 @@ export default function App() {
           <section ref={screenRef} className="screen screen-life" key={`life-${life.seed}`}>
             <header className="life-head">
               <button type="button" className="ghost small" onClick={restart}><Icon icon={arrowLeft} width={16} /> 처음으로</button>
-              <span className="life-title">랜덤 한반도인 라이프</span>
+              <span className="life-title">한반도 생애 시뮬레이터</span>
             </header>
             <LifeCard life={life} onOpenSources={setSources} />
             <div className="actions">
