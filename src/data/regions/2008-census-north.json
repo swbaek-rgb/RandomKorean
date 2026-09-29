@@ -1,0 +1,10 @@
+{
+  "year": 2008,
+  "from": 1945,
+  "to": 2026,
+  "side": "north",
+  "source": "nk_census_2008",
+  "unit": "인구",
+  "note": "2008년 북한 인구센서스 (중앙통계국·UNFPA) 시·군별 인구",
+  "rows": []
+}

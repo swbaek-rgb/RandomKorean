@@ -1,0 +1,1371 @@
+{
+  "year": 1935,
+  "from": 1897,
+  "to": 1944,
+  "source": "chosen_sotokufu",
+  "unit": "인구",
+  "note": "1935년 국세조사 부·군별 인구. 남북한 전역",
+  "rows": [
+    {
+      "province": "경기도",
+      "name": "경성부",
+      "weight": 444098,
+      "now": "서울"
+    },
+    {
+      "province": "경기도",
+      "name": "인천부",
+      "weight": 82997,
+      "now": "인천"
+    },
+    {
+      "province": "경기도",
+      "name": "개성부",
+      "weight": 55537,
+      "now": "북한 개성"
+    },
+    {
+      "province": "경기도",
+      "name": "고양군",
+      "weight": 286608,
+      "now": "고양·서울 은평 일부"
+    },
+    {
+      "province": "경기도",
+      "name": "광주군",
+      "weight": 89133,
+      "now": "광주·성남·하남"
+    },
+    {
+      "province": "경기도",
+      "name": "양주군",
+      "weight": 111714,
+      "now": "양주·의정부·남양주·구리"
+    },
+    {
+      "province": "경기도",
+      "name": "연천군",
+      "weight": 76823
+    },
+    {
+      "province": "경기도",
+      "name": "포천군",
+      "weight": 68802,
+      "now": "포천시"
+    },
+    {
+      "province": "경기도",
+      "name": "가평군",
+      "weight": 36793
+    },
+    {
+      "province": "경기도",
+      "name": "양평군",
+      "weight": 78802
+    },
+    {
+      "province": "경기도",
+      "name": "여주군",
+      "weight": 69890,
+      "now": "여주시"
+    },
+    {
+      "province": "경기도",
+      "name": "이천군",
+      "weight": 68134,
+      "now": "이천시"
+    },
+    {
+      "province": "경기도",
+      "name": "용인군",
+      "weight": 82638,
+      "now": "용인시"
+    },
+    {
+      "province": "경기도",
+      "name": "안성군",
+      "weight": 89637,
+      "now": "안성시"
+    },
+    {
+      "province": "경기도",
+      "name": "진위군",
+      "weight": 83601,
+      "now": "평택"
+    },
+    {
+      "province": "경기도",
+      "name": "수원군",
+      "weight": 173187,
+      "now": "수원·화성·오산"
+    },
+    {
+      "province": "경기도",
+      "name": "시흥군",
+      "weight": 94511,
+      "now": "시흥·안양·광명"
+    },
+    {
+      "province": "경기도",
+      "name": "부천군",
+      "weight": 100693,
+      "now": "부천·인천 일부"
+    },
+    {
+      "province": "경기도",
+      "name": "김포군",
+      "weight": 59732,
+      "now": "김포"
+    },
+    {
+      "province": "경기도",
+      "name": "강화군",
+      "weight": 80469,
+      "now": "인천 강화"
+    },
+    {
+      "province": "경기도",
+      "name": "파주군",
+      "weight": 58139,
+      "now": "파주시"
+    },
+    {
+      "province": "경기도",
+      "name": "장단군",
+      "weight": 68293,
+      "now": "북한 개성·파주 일대"
+    },
+    {
+      "province": "경기도",
+      "name": "개풍군",
+      "weight": 91460,
+      "now": "북한 개성"
+    },
+    {
+      "province": "강원도",
+      "name": "춘천군",
+      "weight": 92308,
+      "now": "춘천"
+    },
+    {
+      "province": "강원도",
+      "name": "인제군",
+      "weight": 76456
+    },
+    {
+      "province": "강원도",
+      "name": "양구군",
+      "weight": 54814
+    },
+    {
+      "province": "강원도",
+      "name": "회양군",
+      "weight": 82044,
+      "now": "북한 회양"
+    },
+    {
+      "province": "강원도",
+      "name": "통천군",
+      "weight": 55847,
+      "now": "북한 통천"
+    },
+    {
+      "province": "강원도",
+      "name": "고성군",
+      "weight": 67318,
+      "now": "고성 (남북으로 나뉨)"
+    },
+    {
+      "province": "강원도",
+      "name": "양양군",
+      "weight": 70053,
+      "now": "양양·속초"
+    },
+    {
+      "province": "강원도",
+      "name": "강릉군",
+      "weight": 104300,
+      "now": "강릉"
+    },
+    {
+      "province": "강원도",
+      "name": "삼척군",
+      "weight": 93278,
+      "now": "삼척·동해·태백"
+    },
+    {
+      "province": "강원도",
+      "name": "울진군",
+      "weight": 77133,
+      "now": "경북 울진"
+    },
+    {
+      "province": "강원도",
+      "name": "정선군",
+      "weight": 52006,
+      "now": "정선"
+    },
+    {
+      "province": "강원도",
+      "name": "평창군",
+      "weight": 82706,
+      "now": "평창"
+    },
+    {
+      "province": "강원도",
+      "name": "영월군",
+      "weight": 69558,
+      "now": "영월"
+    },
+    {
+      "province": "강원도",
+      "name": "원주군",
+      "weight": 78826,
+      "now": "원주"
+    },
+    {
+      "province": "강원도",
+      "name": "횡성군",
+      "weight": 79587
+    },
+    {
+      "province": "강원도",
+      "name": "홍천군",
+      "weight": 90172
+    },
+    {
+      "province": "강원도",
+      "name": "화천군",
+      "weight": 43008
+    },
+    {
+      "province": "강원도",
+      "name": "김화군",
+      "weight": 97844,
+      "now": "철원 김화·북한 김화"
+    },
+    {
+      "province": "강원도",
+      "name": "철원군",
+      "weight": 91427
+    },
+    {
+      "province": "강원도",
+      "name": "평강군",
+      "weight": 68913,
+      "now": "북한 평강"
+    },
+    {
+      "province": "강원도",
+      "name": "이천군",
+      "weight": 77676,
+      "now": "북한 이천"
+    },
+    {
+      "province": "충청북도",
+      "name": "청주군",
+      "weight": 197258,
+      "now": "청주"
+    },
+    {
+      "province": "충청북도",
+      "name": "보은군",
+      "weight": 75010
+    },
+    {
+      "province": "충청북도",
+      "name": "옥천군",
+      "weight": 80462
+    },
+    {
+      "province": "충청북도",
+      "name": "영동군",
+      "weight": 92523
+    },
+    {
+      "province": "충청북도",
+      "name": "진천군",
+      "weight": 48777
+    },
+    {
+      "province": "충청북도",
+      "name": "괴산군",
+      "weight": 118929,
+      "now": "괴산·증평"
+    },
+    {
+      "province": "충청북도",
+      "name": "음성군",
+      "weight": 82541
+    },
+    {
+      "province": "충청북도",
+      "name": "충주군",
+      "weight": 126507,
+      "now": "충주"
+    },
+    {
+      "province": "충청북도",
+      "name": "제천군",
+      "weight": 88415,
+      "now": "제천"
+    },
+    {
+      "province": "충청북도",
+      "name": "단양군",
+      "weight": 49068
+    },
+    {
+      "province": "충청남도",
+      "name": "대전부",
+      "weight": 39061,
+      "now": "대전"
+    },
+    {
+      "province": "충청남도",
+      "name": "대덕군",
+      "weight": 87769,
+      "now": "대전"
+    },
+    {
+      "province": "충청남도",
+      "name": "연기군",
+      "weight": 69237,
+      "now": "세종"
+    },
+    {
+      "province": "충청남도",
+      "name": "공주군",
+      "weight": 129006,
+      "now": "공주"
+    },
+    {
+      "province": "충청남도",
+      "name": "논산군",
+      "weight": 144970,
+      "now": "논산·계룡"
+    },
+    {
+      "province": "충청남도",
+      "name": "부여군",
+      "weight": 122626
+    },
+    {
+      "province": "충청남도",
+      "name": "서천군",
+      "weight": 104246
+    },
+    {
+      "province": "충청남도",
+      "name": "보령군",
+      "weight": 86930,
+      "now": "보령시"
+    },
+    {
+      "province": "충청남도",
+      "name": "청양군",
+      "weight": 72699
+    },
+    {
+      "province": "충청남도",
+      "name": "홍성군",
+      "weight": 96554
+    },
+    {
+      "province": "충청남도",
+      "name": "예산군",
+      "weight": 109997
+    },
+    {
+      "province": "충청남도",
+      "name": "서산군",
+      "weight": 156720,
+      "now": "서산·태안"
+    },
+    {
+      "province": "충청남도",
+      "name": "당진군",
+      "weight": 93024,
+      "now": "당진시"
+    },
+    {
+      "province": "충청남도",
+      "name": "아산군",
+      "weight": 90980,
+      "now": "아산"
+    },
+    {
+      "province": "충청남도",
+      "name": "천안군",
+      "weight": 123006,
+      "now": "천안"
+    },
+    {
+      "province": "전라북도",
+      "name": "군산부",
+      "weight": 41698,
+      "now": "군산"
+    },
+    {
+      "province": "전라북도",
+      "name": "전주부",
+      "weight": 42387,
+      "now": "전주"
+    },
+    {
+      "province": "전라북도",
+      "name": "완주군",
+      "weight": 151024,
+      "now": "완주·전주 일부"
+    },
+    {
+      "province": "전라북도",
+      "name": "진안군",
+      "weight": 69720
+    },
+    {
+      "province": "전라북도",
+      "name": "금산군",
+      "weight": 76905,
+      "now": "충남 금산"
+    },
+    {
+      "province": "전라북도",
+      "name": "무주군",
+      "weight": 52769
+    },
+    {
+      "province": "전라북도",
+      "name": "장수군",
+      "weight": 53241
+    },
+    {
+      "province": "전라북도",
+      "name": "임실군",
+      "weight": 81393
+    },
+    {
+      "province": "전라북도",
+      "name": "남원군",
+      "weight": 115223,
+      "now": "남원"
+    },
+    {
+      "province": "전라북도",
+      "name": "순창군",
+      "weight": 73862
+    },
+    {
+      "province": "전라북도",
+      "name": "정읍군",
+      "weight": 174928,
+      "now": "정읍"
+    },
+    {
+      "province": "전라북도",
+      "name": "고창군",
+      "weight": 122329
+    },
+    {
+      "province": "전라북도",
+      "name": "부안군",
+      "weight": 98734
+    },
+    {
+      "province": "전라북도",
+      "name": "김제군",
+      "weight": 174078,
+      "now": "김제"
+    },
+    {
+      "province": "전라북도",
+      "name": "옥구군",
+      "weight": 108148,
+      "now": "군산"
+    },
+    {
+      "province": "전라북도",
+      "name": "익산군",
+      "weight": 170797,
+      "now": "익산"
+    },
+    {
+      "province": "전라남도",
+      "name": "목포부",
+      "weight": 60734,
+      "now": "목포"
+    },
+    {
+      "province": "전라남도",
+      "name": "광주부",
+      "weight": 54607,
+      "now": "광주"
+    },
+    {
+      "province": "전라남도",
+      "name": "광산군",
+      "weight": 101561,
+      "now": "광주 광산"
+    },
+    {
+      "province": "전라남도",
+      "name": "담양군",
+      "weight": 87513
+    },
+    {
+      "province": "전라남도",
+      "name": "곡성군",
+      "weight": 76110
+    },
+    {
+      "province": "전라남도",
+      "name": "구례군",
+      "weight": 52678
+    },
+    {
+      "province": "전라남도",
+      "name": "광양군",
+      "weight": 61769,
+      "now": "광양시"
+    },
+    {
+      "province": "전라남도",
+      "name": "여수군",
+      "weight": 120443,
+      "now": "여수"
+    },
+    {
+      "province": "전라남도",
+      "name": "순천군",
+      "weight": 133729,
+      "now": "순천"
+    },
+    {
+      "province": "전라남도",
+      "name": "고흥군",
+      "weight": 134245
+    },
+    {
+      "province": "전라남도",
+      "name": "보성군",
+      "weight": 110123
+    },
+    {
+      "province": "전라남도",
+      "name": "화순군",
+      "weight": 105749
+    },
+    {
+      "province": "전라남도",
+      "name": "장흥군",
+      "weight": 90873
+    },
+    {
+      "province": "전라남도",
+      "name": "강진군",
+      "weight": 79729
+    },
+    {
+      "province": "전라남도",
+      "name": "해남군",
+      "weight": 132821
+    },
+    {
+      "province": "전라남도",
+      "name": "영암군",
+      "weight": 91177
+    },
+    {
+      "province": "전라남도",
+      "name": "무안군",
+      "weight": 195000,
+      "now": "무안·신안"
+    },
+    {
+      "province": "전라남도",
+      "name": "나주군",
+      "weight": 175808,
+      "now": "나주"
+    },
+    {
+      "province": "전라남도",
+      "name": "함평군",
+      "weight": 87296
+    },
+    {
+      "province": "전라남도",
+      "name": "영광군",
+      "weight": 101812
+    },
+    {
+      "province": "전라남도",
+      "name": "장성군",
+      "weight": 96469
+    },
+    {
+      "province": "전라남도",
+      "name": "완도군",
+      "weight": 87952
+    },
+    {
+      "province": "전라남도",
+      "name": "진도군",
+      "weight": 62928
+    },
+    {
+      "province": "전라남도",
+      "name": "제주도",
+      "weight": 207220,
+      "now": "제주"
+    },
+    {
+      "province": "경상북도",
+      "name": "대구부",
+      "weight": 107414,
+      "now": "대구"
+    },
+    {
+      "province": "경상북도",
+      "name": "달성군",
+      "weight": 175023,
+      "now": "대구 달성"
+    },
+    {
+      "province": "경상북도",
+      "name": "군위군",
+      "weight": 62287,
+      "now": "대구 군위"
+    },
+    {
+      "province": "경상북도",
+      "name": "의성군",
+      "weight": 142350
+    },
+    {
+      "province": "경상북도",
+      "name": "안동군",
+      "weight": 166956,
+      "now": "안동"
+    },
+    {
+      "province": "경상북도",
+      "name": "청송군",
+      "weight": 58987
+    },
+    {
+      "province": "경상북도",
+      "name": "영양군",
+      "weight": 48485
+    },
+    {
+      "province": "경상북도",
+      "name": "영덕군",
+      "weight": 86334
+    },
+    {
+      "province": "경상북도",
+      "name": "영일군",
+      "weight": 178013,
+      "now": "포항"
+    },
+    {
+      "province": "경상북도",
+      "name": "경주군",
+      "weight": 191062,
+      "now": "경주"
+    },
+    {
+      "province": "경상북도",
+      "name": "영천군",
+      "weight": 127014,
+      "now": "영천"
+    },
+    {
+      "province": "경상북도",
+      "name": "경산군",
+      "weight": 93924,
+      "now": "경산"
+    },
+    {
+      "province": "경상북도",
+      "name": "청도군",
+      "weight": 94165
+    },
+    {
+      "province": "경상북도",
+      "name": "고령군",
+      "weight": 54389
+    },
+    {
+      "province": "경상북도",
+      "name": "성주군",
+      "weight": 84186
+    },
+    {
+      "province": "경상북도",
+      "name": "칠곡군",
+      "weight": 76155
+    },
+    {
+      "province": "경상북도",
+      "name": "김천군",
+      "weight": 149022,
+      "now": "김천"
+    },
+    {
+      "province": "경상북도",
+      "name": "선산군",
+      "weight": 81441,
+      "now": "구미"
+    },
+    {
+      "province": "경상북도",
+      "name": "상주군",
+      "weight": 184193,
+      "now": "상주"
+    },
+    {
+      "province": "경상북도",
+      "name": "문경군",
+      "weight": 96432,
+      "now": "문경"
+    },
+    {
+      "province": "경상북도",
+      "name": "예천군",
+      "weight": 117216
+    },
+    {
+      "province": "경상북도",
+      "name": "영주군",
+      "weight": 88923,
+      "now": "영주"
+    },
+    {
+      "province": "경상북도",
+      "name": "봉화군",
+      "weight": 87520
+    },
+    {
+      "province": "경상북도",
+      "name": "울릉도",
+      "weight": 11760,
+      "now": "울릉"
+    },
+    {
+      "province": "경상남도",
+      "name": "부산부",
+      "weight": 182503,
+      "now": "부산"
+    },
+    {
+      "province": "경상남도",
+      "name": "마산부",
+      "weight": 31778,
+      "now": "창원"
+    },
+    {
+      "province": "경상남도",
+      "name": "진주군",
+      "weight": 136889,
+      "now": "진주"
+    },
+    {
+      "province": "경상남도",
+      "name": "의령군",
+      "weight": 75400
+    },
+    {
+      "province": "경상남도",
+      "name": "함안군",
+      "weight": 84287
+    },
+    {
+      "province": "경상남도",
+      "name": "창녕군",
+      "weight": 103503
+    },
+    {
+      "province": "경상남도",
+      "name": "밀양군",
+      "weight": 139116,
+      "now": "밀양"
+    },
+    {
+      "province": "경상남도",
+      "name": "양산군",
+      "weight": 44210,
+      "now": "양산"
+    },
+    {
+      "province": "경상남도",
+      "name": "울산군",
+      "weight": 151685,
+      "now": "울산"
+    },
+    {
+      "province": "경상남도",
+      "name": "동래군",
+      "weight": 117843,
+      "now": "부산 동래·기장"
+    },
+    {
+      "province": "경상남도",
+      "name": "김해군",
+      "weight": 124427,
+      "now": "김해"
+    },
+    {
+      "province": "경상남도",
+      "name": "창원군",
+      "weight": 155048,
+      "now": "창원"
+    },
+    {
+      "province": "경상남도",
+      "name": "통영군",
+      "weight": 172169,
+      "now": "통영·거제"
+    },
+    {
+      "province": "경상남도",
+      "name": "고성군",
+      "weight": 89247,
+      "now": "고성"
+    },
+    {
+      "province": "경상남도",
+      "name": "사천군",
+      "weight": 80847,
+      "now": "사천"
+    },
+    {
+      "province": "경상남도",
+      "name": "남해군",
+      "weight": 91052
+    },
+    {
+      "province": "경상남도",
+      "name": "하동군",
+      "weight": 88857
+    },
+    {
+      "province": "경상남도",
+      "name": "산청군",
+      "weight": 77616
+    },
+    {
+      "province": "경상남도",
+      "name": "함양군",
+      "weight": 83149
+    },
+    {
+      "province": "경상남도",
+      "name": "거창군",
+      "weight": 93507
+    },
+    {
+      "province": "경상남도",
+      "name": "합천군",
+      "weight": 125095
+    },
+    {
+      "province": "황해도",
+      "name": "해주군",
+      "weight": 201733,
+      "now": "북한 해주"
+    },
+    {
+      "province": "황해도",
+      "name": "연백군",
+      "weight": 165481,
+      "now": "북한 연안·배천"
+    },
+    {
+      "province": "황해도",
+      "name": "금천군",
+      "weight": 66871,
+      "now": "북한 금천"
+    },
+    {
+      "province": "황해도",
+      "name": "평산군",
+      "weight": 104707,
+      "now": "북한 평산"
+    },
+    {
+      "province": "황해도",
+      "name": "신계군",
+      "weight": 49021,
+      "now": "북한 신계"
+    },
+    {
+      "province": "황해도",
+      "name": "옹진군",
+      "weight": 102484,
+      "now": "북한 옹진"
+    },
+    {
+      "province": "황해도",
+      "name": "장연군",
+      "weight": 98459,
+      "now": "북한 장연"
+    },
+    {
+      "province": "황해도",
+      "name": "송화군",
+      "weight": 75223,
+      "now": "북한 송화"
+    },
+    {
+      "province": "황해도",
+      "name": "은율군",
+      "weight": 49829,
+      "now": "북한 은율"
+    },
+    {
+      "province": "황해도",
+      "name": "안악군",
+      "weight": 93208,
+      "now": "북한 안악"
+    },
+    {
+      "province": "황해도",
+      "name": "신천군",
+      "weight": 117678,
+      "now": "북한 신천"
+    },
+    {
+      "province": "황해도",
+      "name": "재령군",
+      "weight": 104237,
+      "now": "북한 재령"
+    },
+    {
+      "province": "황해도",
+      "name": "황주군",
+      "weight": 118829,
+      "now": "북한 황주"
+    },
+    {
+      "province": "황해도",
+      "name": "봉산군",
+      "weight": 117920,
+      "now": "북한 사리원"
+    },
+    {
+      "province": "황해도",
+      "name": "서흥군",
+      "weight": 69246,
+      "now": "북한 서흥"
+    },
+    {
+      "province": "황해도",
+      "name": "수안군",
+      "weight": 72643,
+      "now": "북한 수안"
+    },
+    {
+      "province": "황해도",
+      "name": "곡산군",
+      "weight": 66645,
+      "now": "북한 곡산"
+    },
+    {
+      "province": "평안북도",
+      "name": "신의주부",
+      "weight": 58462,
+      "now": "북한 신의주"
+    },
+    {
+      "province": "평안북도",
+      "name": "의주군",
+      "weight": 179036,
+      "now": "북한 의주·신의주"
+    },
+    {
+      "province": "평안북도",
+      "name": "구성군",
+      "weight": 72998,
+      "now": "북한 구성"
+    },
+    {
+      "province": "평안북도",
+      "name": "태천군",
+      "weight": 52256,
+      "now": "북한 태천"
+    },
+    {
+      "province": "평안북도",
+      "name": "운산군",
+      "weight": 52708,
+      "now": "북한 운산"
+    },
+    {
+      "province": "평안북도",
+      "name": "희천군",
+      "weight": 72588,
+      "now": "북한 희천"
+    },
+    {
+      "province": "평안북도",
+      "name": "영변군",
+      "weight": 134471,
+      "now": "북한 영변"
+    },
+    {
+      "province": "평안북도",
+      "name": "박천군",
+      "weight": 77885,
+      "now": "북한 박천"
+    },
+    {
+      "province": "평안북도",
+      "name": "정주군",
+      "weight": 144652,
+      "now": "북한 정주"
+    },
+    {
+      "province": "평안북도",
+      "name": "선천군",
+      "weight": 86416,
+      "now": "북한 선천"
+    },
+    {
+      "province": "평안북도",
+      "name": "철산군",
+      "weight": 70166,
+      "now": "북한 철산"
+    },
+    {
+      "province": "평안북도",
+      "name": "용천군",
+      "weight": 128923,
+      "now": "북한 용천"
+    },
+    {
+      "province": "평안북도",
+      "name": "삭주군",
+      "weight": 52698,
+      "now": "북한 삭주"
+    },
+    {
+      "province": "평안북도",
+      "name": "창성군",
+      "weight": 62017,
+      "now": "북한 창성"
+    },
+    {
+      "province": "평안북도",
+      "name": "벽동군",
+      "weight": 57215,
+      "now": "북한 벽동"
+    },
+    {
+      "province": "평안북도",
+      "name": "초산군",
+      "weight": 81437,
+      "now": "북한 초산"
+    },
+    {
+      "province": "평안북도",
+      "name": "위원군",
+      "weight": 41085,
+      "now": "북한 위원"
+    },
+    {
+      "province": "평안북도",
+      "name": "강계군",
+      "weight": 167342,
+      "now": "북한 강계"
+    },
+    {
+      "province": "평안북도",
+      "name": "자성군",
+      "weight": 72580,
+      "now": "북한 자성"
+    },
+    {
+      "province": "평안북도",
+      "name": "후창군",
+      "weight": 45118,
+      "now": "북한 후창"
+    },
+    {
+      "province": "평안남도",
+      "name": "평양부",
+      "weight": 182121,
+      "now": "북한 평양"
+    },
+    {
+      "province": "평안남도",
+      "name": "진남포부",
+      "weight": 50512,
+      "now": "북한 남포"
+    },
+    {
+      "province": "평안남도",
+      "name": "대동군",
+      "weight": 182395,
+      "now": "북한 평양 교외"
+    },
+    {
+      "province": "평안남도",
+      "name": "순천군",
+      "weight": 100310,
+      "now": "북한 순천"
+    },
+    {
+      "province": "평안남도",
+      "name": "맹산군",
+      "weight": 45465,
+      "now": "북한 맹산"
+    },
+    {
+      "province": "평안남도",
+      "name": "양덕군",
+      "weight": 45029,
+      "now": "북한 양덕"
+    },
+    {
+      "province": "평안남도",
+      "name": "성천군",
+      "weight": 98054,
+      "now": "북한 성천"
+    },
+    {
+      "province": "평안남도",
+      "name": "강동군",
+      "weight": 67267,
+      "now": "북한 강동"
+    },
+    {
+      "province": "평안남도",
+      "name": "중화군",
+      "weight": 93948,
+      "now": "북한 평양 중화"
+    },
+    {
+      "province": "평안남도",
+      "name": "용강군",
+      "weight": 114426,
+      "now": "북한 남포 용강"
+    },
+    {
+      "province": "평안남도",
+      "name": "강서군",
+      "weight": 112429,
+      "now": "북한 남포 강서"
+    },
+    {
+      "province": "평안남도",
+      "name": "평원군",
+      "weight": 125913,
+      "now": "북한 평원"
+    },
+    {
+      "province": "평안남도",
+      "name": "안주군",
+      "weight": 90254,
+      "now": "북한 안주"
+    },
+    {
+      "province": "평안남도",
+      "name": "개천군",
+      "weight": 58650,
+      "now": "북한 개천"
+    },
+    {
+      "province": "평안남도",
+      "name": "덕천군",
+      "weight": 48992,
+      "now": "북한 덕천"
+    },
+    {
+      "province": "평안남도",
+      "name": "영원군",
+      "weight": 53866,
+      "now": "북한 영원"
+    },
+    {
+      "province": "함경북도",
+      "name": "청진부",
+      "weight": 55530,
+      "now": "북한 청진"
+    },
+    {
+      "province": "함경북도",
+      "name": "경성군",
+      "weight": 133873,
+      "now": "북한 청진 인근 경성"
+    },
+    {
+      "province": "함경북도",
+      "name": "명천군",
+      "weight": 122880,
+      "now": "북한 명천"
+    },
+    {
+      "province": "함경북도",
+      "name": "길주군",
+      "weight": 86079,
+      "now": "북한 길주"
+    },
+    {
+      "province": "함경북도",
+      "name": "성진군",
+      "weight": 87890,
+      "now": "북한 김책"
+    },
+    {
+      "province": "함경북도",
+      "name": "부령군",
+      "weight": 46432,
+      "now": "북한 청진 부령"
+    },
+    {
+      "province": "함경북도",
+      "name": "무산군",
+      "weight": 66608,
+      "now": "북한 무산"
+    },
+    {
+      "province": "함경북도",
+      "name": "회령군",
+      "weight": 59344,
+      "now": "북한 회령"
+    },
+    {
+      "province": "함경북도",
+      "name": "종성군",
+      "weight": 36369,
+      "now": "북한 종성"
+    },
+    {
+      "province": "함경북도",
+      "name": "은성군",
+      "weight": 30409,
+      "now": "북한 온성"
+    },
+    {
+      "province": "함경북도",
+      "name": "경원군",
+      "weight": 35113,
+      "now": "북한 경원"
+    },
+    {
+      "province": "함경북도",
+      "name": "경흥군",
+      "weight": 92297,
+      "now": "북한 나선"
+    },
+    {
+      "province": "함경남도",
+      "name": "원산부",
+      "weight": 60169,
+      "now": "북한 원산"
+    },
+    {
+      "province": "함경남도",
+      "name": "함흥부",
+      "weight": 56571,
+      "now": "북한 함흥"
+    },
+    {
+      "province": "함경남도",
+      "name": "함주군",
+      "weight": 209327,
+      "now": "북한 함흥"
+    },
+    {
+      "province": "함경남도",
+      "name": "정평군",
+      "weight": 89059,
+      "now": "북한 정평"
+    },
+    {
+      "province": "함경남도",
+      "name": "영흥군",
+      "weight": 137998,
+      "now": "북한 금야"
+    },
+    {
+      "province": "함경남도",
+      "name": "고원군",
+      "weight": 49359,
+      "now": "북한 고원"
+    },
+    {
+      "province": "함경남도",
+      "name": "문천군",
+      "weight": 41044,
+      "now": "북한 문천"
+    },
+    {
+      "province": "함경남도",
+      "name": "덕원군",
+      "weight": 50352,
+      "now": "북한 원산"
+    },
+    {
+      "province": "함경남도",
+      "name": "안변군",
+      "weight": 88613,
+      "now": "북한 안변"
+    },
+    {
+      "province": "함경남도",
+      "name": "홍원군",
+      "weight": 93838,
+      "now": "북한 홍원"
+    },
+    {
+      "province": "함경남도",
+      "name": "북청군",
+      "weight": 194803,
+      "now": "북한 북청"
+    },
+    {
+      "province": "함경남도",
+      "name": "이원군",
+      "weight": 50217,
+      "now": "북한 이원"
+    },
+    {
+      "province": "함경남도",
+      "name": "단천군",
+      "weight": 138882,
+      "now": "북한 단천"
+    },
+    {
+      "province": "함경남도",
+      "name": "신흥군",
+      "weight": 97366,
+      "now": "북한 신흥"
+    },
+    {
+      "province": "함경남도",
+      "name": "장진군",
+      "weight": 80566,
+      "now": "북한 장진"
+    },
+    {
+      "province": "함경남도",
+      "name": "풍산군",
+      "weight": 79079,
+      "now": "북한 풍산"
+    },
+    {
+      "province": "함경남도",
+      "name": "삼수군",
+      "weight": 66632,
+      "now": "북한 삼수"
+    },
+    {
+      "province": "함경남도",
+      "name": "갑산군",
+      "weight": 137801,
+      "now": "북한 갑산"
+    }
+  ]
+}
