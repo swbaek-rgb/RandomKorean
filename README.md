@@ -2,6 +2,8 @@
 
 4만 년 전부터 2026년까지, 한반도에서 태어난 어떤 한 사람의 삶을 시대별 통계로 무작위 생성하는 정적 웹사이트.
 
+**사이트:** https://swbaek-rgb.github.io/RandomKorean/ — `main` 에 푸시하면 GitHub Actions 가 자동으로 빌드·배포한다 (`.github/workflows/deploy.yml`).
+
 ```bash
 npm install
 npm run dev      # 개발 서버
