@@ -62,7 +62,7 @@ export function LifeCard({ life, onOpenSources }: Props) {
     else if (job === '영유아' && (life.currentAge ?? 0) < 3) narrative.push('아직 젖먹이 아기입니다.')
     else if (job === '영유아') narrative.push(`${life.staple.value}${eul(life.staple.value)} 먹으며 자라는 어린아이입니다.`)
     else if (job.startsWith('학생') || job.startsWith('대학생')) narrative.push(`${life.staple.value}${eul(life.staple.value)} 먹으며 자랐고, 지금은 ${job}입니다.`)
-    else if (job.startsWith('은퇴')) narrative.push(`${life.staple.value}${eul(life.staple.value)} 먹으며 자랐고, ${job.replace(/^은퇴 \(전직 (.*)\)$/, '$1')}${euro(job.replace(/^은퇴 \(전직 (.*)\)$/, '$1'))} 일하다 은퇴했습니다.`)
+    else if (job.startsWith('은퇴 · 전직 ')) { const prev = job.slice('은퇴 · 전직 '.length); narrative.push(`${life.staple.value}${eul(life.staple.value)} 먹으며 자랐고, ${prev}${euro(prev)} 일하다 은퇴했습니다.`) }
     else narrative.push(`${life.staple.value}${eul(life.staple.value)} 먹으며 자랐고, ${job}${euro(job)} 살고 있습니다.`)
     if (fam.married) {
       const kids = fam.childrenBorn === 0 ? '자녀는 없었습니다' : fam.childrenSurvived === fam.childrenBorn ? `자녀 ${fam.childrenBorn}명을 두었습니다` : `자녀 ${fam.childrenBorn}명을 낳아 ${fam.childrenSurvived}명을 키웠습니다`

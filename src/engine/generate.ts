@@ -195,7 +195,11 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
   } else if (alive && ageReached < (modernSouth ? 20 : 15)) occupation = { job: '학생', sources: ['kosis_jobs'] }
   else occupation = pickOccupation(rng, era.id, birthYear, country, cls, sex, ageReached)
   if (!sim.death && modernSouth && ageReached >= 20 && ageReached < 26 && rng.chance(0.6)) occupation = { job: `대학생 (졸업 후 ${occupation.job} 지망)`, sources: ['kosis_jobs'] }
-  if (!sim.death && ageReached >= 66 && birthYear >= 1897) occupation = { job: `은퇴 (전직 ${occupation.job})`, sources: occupation.sources }
+  // 은퇴: 고용 관계가 있는 직업만. 주부·농어민·상인·성직·자유업은 은퇴 개념이 없어 그대로 둔다.
+  // 남한 66세(실질 은퇴 연령), 북한은 법정 정년 남 60·여 55
+  const NO_RETIRE = /주부|안주인|가사|농업|농민|농사|소작|자작|협동농장|머슴|어민|해녀|상인|행상|무당|승려|목사|프리랜서|유튜버|지주|가내 노동|식모|이주/
+  const retireAge = country.north ? (sex === 'M' ? 60 : 55) : 66
+  if (!sim.death && ageReached >= retireAge && birthYear >= 1897 && !NO_RETIRE.test(occupation.job)) occupation = { job: `은퇴 · 전직 ${occupation.job}`, sources: occupation.sources }
 
   const staple = pickStaple(rng, era.id, birthYear, country, cls)
   const { s1, s15 } = survivalTo15(birthYear, country, sex)
