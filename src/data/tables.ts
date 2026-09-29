@@ -1,6 +1,6 @@
 import type { EraId } from '../engine/eras'
 import type { Country, Sex, SocialClass } from '../engine/types'
-import type { Rng } from '../engine/rng'
+import { lastPickProb, resetPickProb, tpick, tweighted, type Rng } from '../engine/rng'
 import { pickRegion } from './regions'
 import { modernSouthDiet } from './diet'
 import { PREHISTORIC_CLASSES, isPrehistoric, prehistoricOccupation } from './prehistoric'
@@ -67,7 +67,7 @@ const NORTH_REGIONS: W<string>[] = [
   { v: '남포·개성 등 특별시', w: 4 },
 ]
 
-export function pickCountry(rng: Rng, era: EraId, year: number): { country: Country; sources: string[]; note?: string } {
+export function pickCountry(rng: Rng, era: EraId, year: number): { country: Country; sources: string[]; note?: string; prob?: number } {
   switch (era) {
     case 'paleo':
       return { country: { name: '국가 이전 · 이동 수렵 무리', region: rng.pick(PALEO_REGIONS) }, sources: ['jeongok'] }
@@ -119,12 +119,12 @@ export function pickCountry(rng: Rng, era: EraId, year: number): { country: Coun
     case 'joseon1':
     case 'joseon2': {
       const r = pickRegion(rng, year)
-      if (r) return { country: { name: '조선', region: `${r.province} ${r.label}` }, sources: [r.source], note: `${r.snapshotYear}년 ${r.unit} 비율 기준` }
-      return { country: { name: '조선', region: rng.weighted(JOSEON_PROVINCES) }, sources: ['kwon_shin'] }
+      if (r) return { country: { name: '조선', region: `${r.province} ${r.label}` }, sources: [r.source], note: `${r.snapshotYear}년 ${r.unit} 비율 기준`, prob: r.share }
+      { const region = tweighted(rng, JOSEON_PROVINCES); return { country: { name: '조선', region }, sources: ['kwon_shin'], prob: lastPickProb } }
     }
     case 'colonial': {
       const r = pickRegion(rng, year)
-      if (r) return { country: { name: year < 1910 ? '대한제국' : '일제강점기 조선', region: `${r.province} ${r.label}` }, sources: [r.source], note: `${r.snapshotYear}년 ${r.unit} 비율 기준` }
+      if (r) return { country: { name: year < 1910 ? '대한제국' : '일제강점기 조선', region: `${r.province} ${r.label}` }, sources: [r.source], note: `${r.snapshotYear}년 ${r.unit} 비율 기준`, prob: r.share }
       const region = rng.weighted(JOSEON_PROVINCES).replace('한성', year < 1910 ? '한성' : '경성')
       return { country: { name: year < 1910 ? '대한제국' : '일제강점기 조선' , region }, sources: ['chosen_sotokufu'] }
     }
@@ -133,17 +133,18 @@ export function pickCountry(rng: Rng, era: EraId, year: number): { country: Coun
         const north = rng.chance(0.33)
         const name = north ? '소련 군정 북한 지역' : '미군정 남한 지역'
         const r = pickRegion(rng, year, north ? 'north' : 'south')
-        if (r) return { country: { name, region: `${r.province} ${r.label}`, north }, sources: [r.source], note: `${r.snapshotYear}년 ${r.unit} 비율 기준` }
+        if (r) return { country: { name, region: `${r.province} ${r.label}`, north }, sources: [r.source], note: `${r.snapshotYear}년 ${r.unit} 비율 기준`, prob: r.share * (north ? 0.33 : 0.67) }
         return { country: { name, region: rng.weighted(north ? NORTH_REGIONS : SOUTH_REGIONS), north }, sources: ['kosis_pop', 'un_wpp'] }
       }
       // 인구비: 1950 남 2.0 : 북 1.0 → 2026 남 2.0 : 북 1.0 (출생아 기준은 북한이 약간 높음)
       const northShare = year < 1990 ? 0.34 : year < 2010 ? 0.38 : 0.45
       const north = rng.chance(northShare)
       const r = pickRegion(rng, year, north ? 'north' : 'south')
-      if (r) return { country: { name: north ? '조선민주주의인민공화국 (북한)' : '대한민국 (남한)', region: `${r.province} ${r.label}`, north }, sources: [r.source], note: `${r.snapshotYear}년 ${r.unit} 비율 기준` }
+      if (r) return { country: { name: north ? '조선민주주의인민공화국 (북한)' : '대한민국 (남한)', region: `${r.province} ${r.label}`, north }, sources: [r.source], note: `${r.snapshotYear}년 ${r.unit} 비율 기준`, prob: r.share * (north ? northShare : 1 - northShare) }
       return {
-        country: { name: north ? '조선민주주의인민공화국 (북한)' : '대한민국 (남한)', region: rng.weighted(north ? NORTH_REGIONS : SOUTH_REGIONS), north },
+        country: { name: north ? '조선민주주의인민공화국 (북한)' : '대한민국 (남한)', region: tweighted(rng, north ? NORTH_REGIONS : SOUTH_REGIONS), north },
         sources: ['kosis_pop', 'un_wpp'],
+        prob: lastPickProb * (north ? northShare : 1 - northShare),
       }
     }
   }
@@ -153,7 +154,7 @@ export function pickCountry(rng: Rng, era: EraId, year: number): { country: Coun
 
 const C = (id: string, name: string, desc: string, hazard: number, surname: boolean, literate: boolean): SocialClass => ({ id, name, desc, hazard, surname, literate })
 
-export function pickClass(rng: Rng, era: EraId, year: number, country: Country): { cls: SocialClass; sources: string[]; note: string } {
+export function pickClass(rng: Rng, era: EraId, year: number, country: Country): { cls: SocialClass; sources: string[]; note: string; prob: number } {
   let list: W<SocialClass>[]
   let sources: string[]
   switch (era) {
@@ -268,15 +269,22 @@ export function pickClass(rng: Rng, era: EraId, year: number, country: Country):
   const idx = rng.weightedIndex(list.map((i) => i.w))
   const total = list.reduce((a, b) => a + b.w, 0)
   const share = Math.round((list[idx].w / total) * 100)
-  return { cls: list[idx].v, sources, note: `이 시기 인구의 약 ${share}%가 이 계층` }
+  return { cls: list[idx].v, sources, note: `이 시기 인구의 약 ${share}%가 이 계층`, prob: list[idx].w / total }
 }
 
 // ───────────────────── 직업 ─────────────────────
 
-export function pickOccupation(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass, sex: Sex, ageReached: number): { job: string; sources: string[] } {
+export function pickOccupation(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass, sex: Sex, ageReached: number): { job: string; sources: string[]; prob: number } {
+  const r = pickOccupationInner(rng, era, year, country, cls, sex, ageReached)
+  return { ...r, prob: r.prob ?? lastPickProb }
+}
+
+function pickOccupationInner(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass, sex: Sex, ageReached: number): { job: string; sources: string[]; prob?: number } {
+  resetPickProb()
   const female = sex === 'F'
   if (isPrehistoric(era)) {
-    return { job: prehistoricOccupation(rng, era, cls, sex, ageReached), sources: ['prehist_roles'] }
+    const pre = prehistoricOccupation(rng, era, cls, sex, ageReached)
+    return { job: pre.label, sources: ['prehist_roles'], prob: pre.prob }
   }
   const premodern = era === 'samguk' || era === 'nambuk' || era === 'goryeo' || era === 'joseon1' || era === 'joseon2'
   if (premodern) {
@@ -288,16 +296,16 @@ export function pickOccupation(rng: Rng, era: EraId, year: number, country: Coun
       case 'munbeol':
       case 'goguryeo_elite':
       case 'han_official':
-        return { job: female ? '귀족 가문의 안주인 (가내 노비·재산 관리)' : rng.pick(['관직 (중앙 관료)', '장군·무장', '지방 태수·성주', '왕실 종친']), sources: src }
+        return { job: female ? '귀족 가문의 안주인 (가내 노비·재산 관리)' : tpick(rng, ['관직 (중앙 관료)', '장군·무장', '지방 태수·성주', '왕실 종친']), sources: src }
       case '6dupum':
       case '45dupum':
       case 'minor_official':
       case 'hyangri':
-        return { job: female ? '관인 집안 안살림' : rng.pick(['지방 행정 실무 (향리·촌주)', '하급 관리', '승려 (사원 소속)', '학문·유학자']), sources: src }
+        return { job: female ? '관인 집안 안살림' : tpick(rng, ['지방 행정 실무 (향리·촌주)', '하급 관리', '승려 (사원 소속)', '학문·유학자']), sources: src }
       case 'yangban':
         if (female) return { job: '양반가 안주인 (집안 관리·바느질·길쌈)', sources: src }
         return {
-          job: rng.weighted([
+          job: tweighted(rng, [
             { v: '과거 준비 유생 (평생 급제하지 못함)', w: 45 },
             { v: '문반 관료 (급제)', w: 8 },
             { v: '무반 관료·군관', w: 7 },
@@ -308,20 +316,20 @@ export function pickOccupation(rng: Rng, era: EraId, year: number, country: Coun
           sources: src,
         }
       case 'jungin':
-        return { job: female ? (rng.chance(0.15) ? '의녀' : '중인 집안 안살림') : rng.pick(['역관 (통역)', '의관', '서리 (관청 서기)', '산원 (회계)', '화원 (도화서)', '향리']), sources: src }
+        return { job: female ? (rng.chance(0.15) ? '의녀' : '중인 집안 안살림') : tpick(rng, ['역관 (통역)', '의관', '서리 (관청 서기)', '산원 (회계)', '화원 (도화서)', '향리']), sources: src }
       case 'warrior':
         return { job: female ? '가사와 농경' : '전사·군장 호위', sources: src }
       case 'nobi':
       case 'bond':
       case 'cheonmin':
       case 'malgal':
-        if (female) return { job: rng.pick(['솔거 노비 (주인집 부엌일·물 긷기)', '외거 노비 (농사, 신공 납부)', '관비 (관청 허드렛일)', rng.chance(0.3) ? '기녀 (관기)' : '솔거 노비 (아이 돌봄·빨래)']), sources: src }
-        return { job: rng.pick(['솔거 노비 (주인집 농사·잡일)', '외거 노비 (소작 농사, 신공 납부)', '관노 (관청 잡역)', '사원 노비', era === 'goryeo' ? '향·소·부곡의 수공업 (숯·소금·도자기)' : '백정 (도살·유기 제조)']), sources: src }
+        if (female) return { job: tpick(rng, ['솔거 노비 (주인집 부엌일·물 긷기)', '외거 노비 (농사, 신공 납부)', '관비 (관청 허드렛일)', rng.chance(0.3) ? '기녀 (관기)' : '솔거 노비 (아이 돌봄·빨래)']), sources: src }
+        return { job: tpick(rng, ['솔거 노비 (주인집 농사·잡일)', '외거 노비 (소작 농사, 신공 납부)', '관노 (관청 잡역)', '사원 노비', era === 'goryeo' ? '향·소·부곡의 수공업 (숯·소금·도자기)' : '백정 (도살·유기 제조)']), sources: src }
       default: {
         // 평민·상민·양인
-        if (female) return { job: rng.weighted([{ v: '농사와 길쌈 (베·모시 짜기)', w: 80 }, { v: '어촌 해녀·조개 채취', w: 6 }, { v: '장터 행상 (보부상 아내)', w: 5 }, { v: '주막 운영', w: 3 }, { v: '무당', w: 3 }, { v: '침선 (바느질 품팔이)', w: 3 }]), sources: src }
+        if (female) return { job: tweighted(rng, [{ v: '농사와 길쌈 (베·모시 짜기)', w: 80 }, { v: '어촌 해녀·조개 채취', w: 6 }, { v: '장터 행상 (보부상 아내)', w: 5 }, { v: '주막 운영', w: 3 }, { v: '무당', w: 3 }, { v: '침선 (바느질 품팔이)', w: 3 }]), sources: src }
         return {
-          job: rng.weighted([
+          job: tweighted(rng, [
             { v: '농민 (자작)', w: 35 },
             { v: '농민 (소작·병작)', w: 40 },
             { v: '어민', w: 6 },
@@ -340,20 +348,20 @@ export function pickOccupation(rng: Rng, era: EraId, year: number, country: Coun
     const src = ['chosen_sotokufu']
     switch (cls.id) {
       case 'landlord':
-        return { job: female ? '지주가 안주인' : rng.pick(['지주 (소작 관리)', '지주 겸 면장·군수', '금융조합 이사', '지주 겸 일본 유학생']), sources: src }
+        return { job: female ? '지주가 안주인' : tpick(rng, ['지주 (소작 관리)', '지주 겸 면장·군수', '금융조합 이사', '지주 겸 일본 유학생']), sources: src }
       case 'intelligentsia':
-        return { job: female ? rng.pick(['보통학교 교사', '간호부', '전화교환수', '여기자']) : rng.pick(['보통학교 교사', '의사', '신문 기자', '군청 서기', '변호사', '목사·전도사']), sources: src }
+        return { job: female ? tpick(rng, ['보통학교 교사', '간호부', '전화교환수', '여기자']) : tpick(rng, ['보통학교 교사', '의사', '신문 기자', '군청 서기', '변호사', '목사·전도사']), sources: src }
       case 'urban_worker':
-        return { job: female ? rng.pick(['방직 공장 여공', '고무신 공장 여공', '식모', '노점 행상']) : rng.pick(['부두 노동자', '광부', '정미소 노동자', '인력거꾼', '철도 노무자', '영세 상점 점원']), sources: src }
+        return { job: female ? tpick(rng, ['방직 공장 여공', '고무신 공장 여공', '식모', '노점 행상']) : tpick(rng, ['부두 노동자', '광부', '정미소 노동자', '인력거꾼', '철도 노무자', '영세 상점 점원']), sources: src }
       case 'baekjeong':
-        return { job: female ? '가내 노동' : rng.pick(['도축업', '유기 제조', '피혁 가공']), sources: src }
+        return { job: female ? '가내 노동' : tpick(rng, ['도축업', '유기 제조', '피혁 가공']), sources: src }
       case 'owner_farmer':
-        return { job: female ? '농사와 가사' : rng.pick(['자작농', '자작농 겸 마을 구장', '자작농 겸 소규모 상업']), sources: src }
+        return { job: female ? '농사와 가사' : tpick(rng, ['자작농', '자작농 겸 마을 구장', '자작농 겸 소규모 상업']), sources: src }
       case 'half_tenant':
         return { job: female ? '농사와 가사' : '자소작농', sources: src }
       default:
         return {
-          job: female ? rng.weighted([{ v: '소작 농사와 가사', w: 85 }, { v: '방직 공장 여공 (도시 이주)', w: 8 }, { v: '식모', w: 5 }, { v: '해녀', w: 2 }]) : rng.weighted([{ v: '소작농', w: 75 }, { v: '화전민', w: 5 }, { v: '만주 이주 농민', w: 8 }, { v: '일본 탄광·공장 노동 이주', w: 7 }, { v: '머슴', w: 5 }]),
+          job: female ? tweighted(rng, [{ v: '소작 농사와 가사', w: 85 }, { v: '방직 공장 여공 (도시 이주)', w: 8 }, { v: '식모', w: 5 }, { v: '해녀', w: 2 }]) : tweighted(rng, [{ v: '소작농', w: 75 }, { v: '화전민', w: 5 }, { v: '만주 이주 농민', w: 8 }, { v: '일본 탄광·공장 노동 이주', w: 7 }, { v: '머슴', w: 5 }]),
           sources: src,
         }
     }
@@ -361,9 +369,9 @@ export function pickOccupation(rng: Rng, era: EraId, year: number, country: Coun
   // 현대
   if (country.north) {
     const src = ['kdi_nk']
-    if (cls.id === 'core') return { job: female ? rng.pick(['당 간부 가정 사무원', '의사', '교원', '평양 상점 판매원', '예술단원']) : rng.pick(['노동당 간부', '군 장교', '외화벌이 무역 일꾼', '보위부·보안원', '대학 교수', '기업소 지배인']), sources: src }
-    if (cls.id === 'hostile') return { job: female ? rng.pick(['협동농장 농민', '장마당 상인', '탄광 노동자', '농촌 교원']) : rng.pick(['협동농장 농민', '탄광 노동자', '벌목공', '군 복무 후 협동농장 배치']), sources: src }
-    return { job: female ? rng.weighted([{ v: '협동농장 농민', w: 35 }, { v: '장마당 상인', w: 25 }, { v: '공장 노동자', w: 20 }, { v: '교원', w: 8 }, { v: '간호원·의사', w: 5 }, { v: '사무원', w: 7 }]) : rng.weighted([{ v: '협동농장 농민', w: 35 }, { v: '공장 노동자', w: 25 }, { v: '10년 군 복무 후 노동자', w: 20 }, { v: '광부', w: 8 }, { v: '운전수', w: 5 }, { v: '기술자', w: 7 }]), sources: src }
+    if (cls.id === 'core') return { job: female ? tpick(rng, ['당 간부 가정 사무원', '의사', '교원', '평양 상점 판매원', '예술단원']) : tpick(rng, ['노동당 간부', '군 장교', '외화벌이 무역 일꾼', '보위부·보안원', '대학 교수', '기업소 지배인']), sources: src }
+    if (cls.id === 'hostile') return { job: female ? tpick(rng, ['협동농장 농민', '장마당 상인', '탄광 노동자', '농촌 교원']) : tpick(rng, ['협동농장 농민', '탄광 노동자', '벌목공', '군 복무 후 협동농장 배치']), sources: src }
+    return { job: female ? tweighted(rng, [{ v: '협동농장 농민', w: 35 }, { v: '장마당 상인', w: 25 }, { v: '공장 노동자', w: 20 }, { v: '교원', w: 8 }, { v: '간호원·의사', w: 5 }, { v: '사무원', w: 7 }]) : tweighted(rng, [{ v: '협동농장 농민', w: 35 }, { v: '공장 노동자', w: 25 }, { v: '10년 군 복무 후 노동자', w: 20 }, { v: '광부', w: 8 }, { v: '운전수', w: 5 }, { v: '기술자', w: 7 }]), sources: src }
   }
   // 남한: 산업 구조가 시대에 따라 크게 변함. 직업을 갖는 시점 ≈ 출생 + 25년
   const jobYear = year + Math.min(ageReached, 30)
@@ -380,7 +388,7 @@ export function pickOccupation(rng: Rng, era: EraId, year: number, country: Coun
     pool.push({ v: female ? '미용사·재봉사' : '운전기사·택시', w: 5 })
     pool.push({ v: '자영업 (식당·소매점)', w: 12 })
     pool.push({ v: female ? '교사·간호사·은행원' : '회사원 (사무직)', w: 12 * (highEnd ? 2 : 1) })
-    pool.push({ v: female ? '교사·약사' : rng.pick(['공무원', '교사', '의사·약사', '엔지니어', '군 장교']), w: 6 * (highEnd ? 2.5 : 0.5) })
+    pool.push({ v: female ? '교사·약사' : tpick(rng, ['공무원', '교사', '의사·약사', '엔지니어', '군 장교']), w: 6 * (highEnd ? 2.5 : 0.5) })
   } else {
     pool.push({ v: '제조업 생산직', w: 15 * (lowEnd ? 1.3 : 0.7) })
     pool.push({ v: '자영업 (식당·카페·소매점)', w: 14 })
@@ -392,7 +400,7 @@ export function pickOccupation(rng: Rng, era: EraId, year: number, country: Coun
     pool.push({ v: rng.pick(['서비스직 (판매·콜센터)', '음식점 종사자', '건설 노동자', '경비·청소']), w: 10 * (lowEnd ? 1.8 : 0.5) })
     pool.push({ v: female ? '전업주부' : '프리랜서·유튜버', w: female ? 10 : 3 })
   }
-  return { job: rng.weighted(pool), sources: src }
+  return { job: tweighted(rng, pool), sources: src }
 }
 
 // ───────────────────── 주식 ─────────────────────

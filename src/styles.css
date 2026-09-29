@@ -118,6 +118,7 @@ body { min-height: 100dvh; overflow-x: hidden; }
 .row-label { color: var(--paper-mute); font-size: 0.82rem; padding-top: 3px; letter-spacing: 0.04em; }
 .row-value { min-width: 0; }
 .row-main { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; line-height: 1.55; word-break: keep-all; font-size: 0.98rem; }
+.row-odds { font-size: 0.74rem; color: var(--paper-mute); opacity: 0.75; margin-top: 5px; line-height: 1.5; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
 .row-note { font-size: 0.8rem; color: var(--paper-mute); margin-top: 5px; line-height: 1.55; }
 .dim { color: var(--paper-dim); }
 

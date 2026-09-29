@@ -1,6 +1,6 @@
 import { Rng } from './rng'
 import { CURRENT_YEAR, ERAS, FIRST_YEAR, eraOf, type Era } from './eras'
-import { birthWeightedYear, eraBirthShare, tfr } from './demography'
+import { birthWeightedYear, birthsInYear, eraBirthShare, tfr } from './demography'
 import type { Country, Death, Family, Life, Mode, Sex, SocialClass } from './types'
 import { pickCountry, pickClass, pickOccupation, pickStaple } from '../data/tables'
 import { pickName } from '../data/names'
@@ -10,6 +10,42 @@ import { birthProbability, maternalMortalityPerBirth } from '../data/maternal'
 import { isPrehistoric, prehistoricChildRole } from '../data/prehistoric'
 
 const shareCache = new Map<string, number>()
+
+/** 확률을 읽기 좋은 문자열로 */
+export function pct(p: number): string {
+  if (p >= 0.1) return `${Math.round(p * 100)}%`
+  if (p >= 0.01) return `${(p * 100).toFixed(1)}%`
+  if (p >= 0.0001) return `${(p * 100).toFixed(2)}%`
+  return `${Math.max(1, Math.round(p * 1e6)) / 1e4}%`
+}
+
+let totalBirthsCache: number | null = null
+function totalBirths(): number {
+  if (totalBirthsCache === null) {
+    let t = 0
+    for (let y = FIRST_YEAR; y <= CURRENT_YEAR; y++) t += birthsInYear(y)
+    totalBirthsCache = t
+  }
+  return totalBirthsCache
+}
+
+/** 출생 시점 기준, 해당 나이까지 살아 있을 확률 (사건·산모 사망 제외) */
+function survivalTo(age: number, birthYear: number, country: Country, cls: SocialClass, sex: Sex): number {
+  let s = 1
+  for (let a = 0; a < age; a++) {
+    const year = birthYear + a
+    if (year > CURRENT_YEAR) break
+    const p = hazardParams(year, eraOf(year).id, country)
+    s *= 1 - Math.min(0.95, baseHazard(a, p, sex, year >= 1960) * cls.hazard)
+  }
+  return s
+}
+
+function poissonPmf(k: number, lambda: number): number {
+  let p = Math.exp(-lambda)
+  for (let i = 1; i <= k; i++) p *= lambda / i
+  return p
+}
 function eraShare(era: Era): number {
   let v = shareCache.get(era.id)
   if (v === undefined) {
@@ -173,8 +209,8 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
   const birthYear = fixedYear === undefined ? pickBirthYear(rng, mode) : Math.max(FIRST_YEAR, Math.min(CURRENT_YEAR, Math.round(fixedYear)))
   const era = eraOf(birthYear)
   const sex: Sex = rng.chance(0.512) ? 'M' : 'F'
-  const { country, sources: cSrc, note: cNote } = pickCountry(rng, era.id, birthYear)
-  const { cls, sources: clsSrc, note: clsNote } = pickClass(rng, era.id, birthYear, country)
+  const { country, sources: cSrc, note: cNote, prob: cProb } = pickCountry(rng, era.id, birthYear)
+  const { cls, sources: clsSrc, note: clsNote, prob: clsProb } = pickClass(rng, era.id, birthYear, country)
   const name = pickName(rng, era.id, birthYear, country, cls, sex)
   const plan: MarriagePlan = {
     everMarries: !rng.chance(neverMarriedRate(birthYear + 45, sex, !!country.north)),
@@ -185,7 +221,7 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
   const father = pickOccupation(rng, era.id, birthYear - 30 < era.start ? era.start : birthYear - 30, country, cls, 'M', 30)
   const family = buildFamily(rng, birthYear, country, cls, sex, sim.death, father.job, plan, sim.births)
 
-  let occupation: { job: string; sources: string[] }
+  let occupation: { job: string; sources: string[]; prob?: number }
   const modernSouth = birthYear >= 1945 && !country.north
   const alive = !sim.death
   if (ageReached < 7) occupation = alive ? { job: '영유아', sources: [] } : { job: '없음 (영유아기에 사망)', sources: [] }
@@ -205,6 +241,18 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
   const { s1, s15 } = survivalTo15(birthYear, country, sex)
   const mortalityNote = `이 시기 태어난 아이 100명 중 ${Math.round((1 - s1) * 100)}명은 첫돌 전에, ${Math.round((1 - s15) * 100)}명은 15세 전에 죽었습니다.`
 
+  // 확률 각주
+  const span = era.end - era.start
+  const yearOdds = fixedYear !== undefined ? undefined : mode === 'uniform' ? `시대 ${ERAS.length}분의 1 × 그 안의 ${span.toLocaleString()}년 중 1년 = ${pct(1 / ERAS.length / span)}` : `전체 출생 중 이 해 ${pct(birthsInYear(birthYear) / totalBirths())}, 이 시대 ${pct(eraShare(era))}`
+  const nameOdds = `${sex === 'M' ? '남자' : '여자'} ${pct(sex === 'M' ? 0.512 : 0.488)} · 이 이름 ${pct(name.prob)}`
+  const regionOdds = cProb !== undefined ? `이 지역 ${pct(cProb)}` : undefined
+  const classOdds = `이 계층 ${pct(clsProb)}`
+  const jobOdds = occupation.sources.length > 0 && ageReached >= 15 ? `같은 시대·계급·성별 중 ${pct(occupation.prob ?? 1)}` : undefined
+  const sibLambda = Math.max(0, tfr(birthYear, !!country.north) - 1) * (tfr(birthYear, !!country.north) > 3 ? 1.05 : 1)
+  const familyOdds = `형제 ${family.siblingsBorn}명 ${pct(poissonPmf(family.siblingsBorn, sibLambda))} · 생애 혼인 ${pct(1 - neverMarriedRate(birthYear + 45, sex, !!country.north))}`
+  const sAge = survivalTo(ageReached, birthYear, country, cls, sex)
+  const deathOdds = sim.death ? `같은 해 태어난 ${sex === 'M' ? '남자' : '여자'} 중 ${pct(1 - sAge)}가 이 나이 전에 사망` : `이 나이까지 살아 있을 확률 ${pct(sAge)}`
+
   return {
     seed,
     mode,
@@ -213,15 +261,16 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
     eraId: era.id,
     eraName: era.name,
     sex,
-    name: { value: name.name, sources: name.sources, note: name.note },
-    country: { value: country, sources: cSrc, note: cNote },
-    socialClass: { value: cls, sources: clsSrc, note: clsNote },
-    occupation: { value: occupation.job, sources: occupation.sources },
+    name: { value: name.name, sources: name.sources, note: name.note, odds: nameOdds },
+    country: { value: country, sources: cSrc, note: cNote, odds: regionOdds },
+    socialClass: { value: cls, sources: clsSrc, note: clsNote, odds: classOdds },
+    occupation: { value: occupation.job, sources: occupation.sources, odds: jobOdds },
     staple: { value: staple.food, sources: staple.sources, note: staple.note },
-    family: { value: family, sources: birthYear >= 1925 ? ['kosis_marriage', 'kosis_pop', ...(country.north ? ['un_wpp'] : [])] : ['hh_size', 'coale_demeny'] },
-    death: { value: sim.death, sources: sim.deathSources },
+    family: { value: family, sources: birthYear >= 1925 ? ['kosis_marriage', 'kosis_pop', ...(country.north ? ['un_wpp'] : [])] : ['hh_size', 'coale_demeny'], odds: familyOdds },
+    death: { value: sim.death, sources: sim.deathSources, odds: deathOdds },
     currentAge: sim.death ? null : CURRENT_YEAR - birthYear,
     eraShare: eraShare(era),
+    yearOdds,
     mortalityNote,
   }
 }

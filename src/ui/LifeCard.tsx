@@ -11,7 +11,7 @@ interface Props {
   onOpenSources: (ids: string[]) => void
 }
 
-function Row({ label, children, sources, onOpen, note }: { label: string; children: React.ReactNode; sources: string[]; onOpen: (ids: string[]) => void; note?: string }) {
+function Row({ label, children, sources, onOpen, note, odds }: { label: string; children: React.ReactNode; sources: string[]; onOpen: (ids: string[]) => void; note?: string; odds?: string }) {
   return (
     <div className="row">
       <div className="row-label">{label}</div>
@@ -20,6 +20,7 @@ function Row({ label, children, sources, onOpen, note }: { label: string; childr
           <span>{children}</span>
           <SourcePill sources={sources} onOpen={onOpen} />
         </div>
+        {odds && <div className="row-odds">확률 · {odds}</div>}
         {note && <div className="row-note">{note}</div>}
       </div>
     </div>
@@ -92,34 +93,34 @@ export function LifeCard({ life, onOpenSources }: Props) {
       <p className="mortality-note">{life.mortalityNote}</p>
 
       <div className="rows">
-        <Row label="생년" sources={['kosis_pop', 'kwon_shin', 'samguk_pop', 'jeongok']} onOpen={onOpenSources} note={life.fixedYear !== undefined ? `직접 고른 생년. 출생아 가중이라면 이 시대에 태어날 확률은 ${(life.eraShare * 100).toFixed(life.eraShare < 0.01 ? 2 : 1)}%` : life.mode === 'uniform' ? `시대 균등 추첨. 출생아 가중이라면 이 시대에 태어날 확률은 ${(life.eraShare * 100).toFixed(life.eraShare < 0.01 ? 2 : 1)}%` : `출생아 가중 추첨. 이 시대 출생 비중 ${(life.eraShare * 100).toFixed(life.eraShare < 0.01 ? 2 : 1)}%`}>
+        <Row label="생년" sources={['kosis_pop', 'kwon_shin', 'samguk_pop', 'jeongok']} onOpen={onOpenSources} odds={life.yearOdds} note={life.fixedYear !== undefined ? `직접 고른 생년. 출생아 가중이라면 이 시대에 태어날 확률은 ${(life.eraShare * 100).toFixed(life.eraShare < 0.01 ? 2 : 1)}%` : life.mode === 'uniform' ? `시대 균등 추첨. 출생아 가중이라면 이 시대에 태어날 확률은 ${(life.eraShare * 100).toFixed(life.eraShare < 0.01 ? 2 : 1)}%` : `출생아 가중 추첨. 이 시대 출생 비중 ${(life.eraShare * 100).toFixed(life.eraShare < 0.01 ? 2 : 1)}%`}>
           {yearLabel} · {life.eraName}
         </Row>
-        <Row label="이름" sources={life.name.sources} onOpen={onOpenSources} note={life.name.note}>
+        <Row label="이름" sources={life.name.sources} onOpen={onOpenSources} note={life.name.note} odds={life.name.odds}>
           {life.name.value} <span className="dim">({sexWord})</span>
         </Row>
-        <Row label="거주" sources={life.country.sources} onOpen={onOpenSources} note={life.country.note}>
+        <Row label="거주" sources={life.country.sources} onOpen={onOpenSources} note={life.country.note} odds={life.country.odds}>
           {c.name} <span className="dim">· {c.region}</span>
         </Row>
-        <Row label="계급" sources={life.socialClass.sources} onOpen={onOpenSources} note={[cls.desc, life.socialClass.note].filter(Boolean).join(' · ')}>
+        <Row label="계급" sources={life.socialClass.sources} onOpen={onOpenSources} note={cls.desc || undefined} odds={life.socialClass.odds}>
           {cls.name}
         </Row>
-        <Row label="가족" sources={life.family.sources} onOpen={onOpenSources}>
+        <Row label="가족" sources={life.family.sources} onOpen={onOpenSources} odds={life.family.odds}>
           아버지는 {fam.fatherJob}. {fam.siblingsBorn === 0 ? '형제 없음' : `형제 ${fam.siblingsBorn}명${fam.siblingsSurvived < fam.siblingsBorn ? ` (그중 ${fam.siblingsSurvived}명이 15세까지 생존)` : ''}`}.{' '}
           {fam.married ? `${fam.marriedAt}세 혼인${fam.divorcedAt !== undefined ? `, ${fam.divorcedAt}세 이혼` : ''}${fam.widowedAt !== undefined ? `, ${fam.widowedAt}세 사별` : ''}${fam.remarried ? ', 재혼' : ''}, 자녀 ${fam.childrenBorn}명${fam.childrenSurvived < fam.childrenBorn ? ` (${fam.childrenSurvived}명 생존)` : ''}` : '미혼'}
         </Row>
-        <Row label="직업" sources={life.occupation.sources} onOpen={onOpenSources}>
+        <Row label="직업" sources={life.occupation.sources} onOpen={onOpenSources} odds={life.occupation.odds}>
           {life.occupation.value}
         </Row>
         <Row label="주식" sources={life.staple.sources} onOpen={onOpenSources} note={life.staple.note}>
           {life.staple.value}
         </Row>
         {d ? (
-          <Row label="사망" sources={life.death.sources} onOpen={onOpenSources} note={d.event ? `역사 사건: ${d.event}` : d.maternal ? '출산 관련 사망. 시대·계급별 출산당 산모 사망률 보정 적용' : undefined}>
+          <Row label="사망" sources={life.death.sources} onOpen={onOpenSources} odds={life.death.odds} note={d.event ? `역사 사건: ${d.event}` : d.maternal ? '출산 관련 사망. 시대·계급별 출산당 산모 사망률 보정 적용' : undefined}>
             {d.age}세 · {formatYear(d.year)} · {d.cause}
           </Row>
         ) : (
-          <Row label="현재" sources={life.death.sources} onOpen={onOpenSources}>
+          <Row label="현재" sources={life.death.sources} onOpen={onOpenSources} odds={life.death.odds}>
             {CURRENT_YEAR}년 기준 {life.currentAge}세, 생존
           </Row>
         )}

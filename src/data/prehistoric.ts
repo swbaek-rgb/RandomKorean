@@ -120,12 +120,15 @@ export function prehistoricChildRole(rng: Rng, era: 'paleo' | 'neo' | 'bronze', 
  * 성인 역할. 젊은 시절 역할을 뽑고, 말년 역할 기준 나이를 넘겼으면 50% 확률로 덧붙인다.
  * 예속민은 10세부터 노역이므로 minAdult 가 낮다.
  */
-export function prehistoricOccupation(rng: Rng, era: 'paleo' | 'neo' | 'bronze', cls: SocialClass, sex: Sex, ageReached: number): string {
+export function prehistoricOccupation(rng: Rng, era: 'paleo' | 'neo' | 'bronze', cls: SocialClass, sex: Sex, ageReached: number): { label: string; prob: number } {
   const roles = ROLES[era]
   // 젊은 시절 역할: 말년 전용 역할과 maxAge 이전 역할 중에서
   const young = roles.filter((r) => !r.late)
   const youngW = young.map((r) => weight(r, cls, sex, ageReached))
-  const main = youngW.some((w) => w > 0) ? young[rng.weightedIndex(youngW)] : young[0]
+  const totalW = youngW.reduce((a, b) => a + b, 0)
+  const idx = youngW.some((w) => w > 0) ? rng.weightedIndex(youngW) : 0
+  const main = young[idx]
+  const prob = totalW > 0 ? youngW[idx] / totalW : 1
   let label = main.name
   // 말년 역할
   const late = roles.filter((r) => r.late).map((r) => ({ r, w: weight(r, cls, sex, ageReached) })).filter((x) => x.w > 0)
@@ -136,5 +139,5 @@ export function prehistoricOccupation(rng: Rng, era: 'paleo' | 'neo' | 'bronze',
     const pick = late[rng.weightedIndex(late.map((x) => x.w))].r
     label = `${label}, ${pick.minAge}세 이후 ${pick.name}`
   }
-  return label
+  return { label, prob }
 }

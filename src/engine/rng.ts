@@ -50,3 +50,20 @@ export class Rng {
 export function randomSeed(): number {
   return (Math.random() * 0xffffffff) >>> 0
 }
+
+/** 마지막 추적 추첨의 확률. tpick/tweighted 가 갱신한다 */
+export let lastPickProb = 1
+export function resetPickProb() {
+  lastPickProb = 1
+}
+export function tpick<T>(rng: Rng, arr: readonly T[]): T {
+  lastPickProb = 1 / arr.length
+  return rng.pick(arr)
+}
+export function tweighted<T>(rng: Rng, items: readonly { v: T; w: number }[]): T {
+  const ws = items.map((i) => i.w)
+  const total = ws.reduce((a, b) => a + b, 0)
+  const i = rng.weightedIndex(ws)
+  lastPickProb = total > 0 ? ws[i] / total : 1
+  return items[i].v
+}

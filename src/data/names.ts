@@ -64,51 +64,65 @@ function decadeList(list: [number, string[]][], year: number): string[] {
   return out
 }
 
+const SURNAME_TOTAL = SURNAMES.reduce((a, b) => a + b.w, 0)
+let nameProb = 1
 function surname(rng: Rng, north: boolean): string {
-  const s = rng.weighted(SURNAMES)
+  const i = rng.weightedIndex(SURNAMES.map((x) => x.w))
+  nameProb *= SURNAMES[i].w / SURNAME_TOTAL
+  const s = SURNAMES[i].v
   return north && s === '이' ? '리' : north && s === '유' ? '류' : s
 }
+function pick<T>(rng: Rng, arr: readonly T[]): T {
+  nameProb *= 1 / arr.length
+  return rng.pick(arr)
+}
 
-export function pickName(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass, sex: Sex): { name: string; sources: string[]; note?: string } {
+export function pickName(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass, sex: Sex): { name: string; sources: string[]; note?: string; prob: number } {
+  nameProb = 1
+  const r = pickNameInner(rng, era, year, country, cls, sex)
+  return { ...r, prob: nameProb }
+}
+
+function pickNameInner(rng: Rng, era: EraId, year: number, country: Country, cls: SocialClass, sex: Sex): { name: string; sources: string[]; note?: string } {
   const f = sex === 'F'
   switch (era) {
     case 'paleo':
     case 'neo':
-      return { name: rng.pick(f ? PALEO_F : PALEO_M), sources: ['fiction_name'], note: '문자 기록 이전. 부름 이름은 창작' }
+      return { name: pick(rng, f ? PALEO_F : PALEO_M), sources: ['fiction_name'], note: '문자 기록 이전. 부름 이름은 창작' }
     case 'bronze':
-      if (cls.literate && rng.chance(0.5)) return { name: rng.pick(f ? SAMGUK_F : ['부루', '준', '위만', '우거', '해모수', '해부루', '단', '검', '한', '왕검']), sources: ['history_db', 'fiction_name'], note: '고조선 지배층 이름 기록 일부 존재' }
-      return { name: rng.pick(f ? [...PALEO_F, ...SAMGUK_F.slice(20)] : [...PALEO_M, ...SAMGUK_M.slice(28)]), sources: ['fiction_name'], note: '일반민 이름 기록 없음. 창작' }
+      if (cls.literate && rng.chance(0.5)) return { name: pick(rng, f ? SAMGUK_F : ['부루', '준', '위만', '우거', '해모수', '해부루', '단', '검', '한', '왕검']), sources: ['history_db', 'fiction_name'], note: '고조선 지배층 이름 기록 일부 존재' }
+      return { name: pick(rng, f ? [...PALEO_F, ...SAMGUK_F.slice(20)] : [...PALEO_M, ...SAMGUK_M.slice(28)]), sources: ['fiction_name'], note: '일반민 이름 기록 없음. 창작' }
     case 'samguk': {
       if (cls.surname && year > 500) {
-        const sn = country.name.includes('신라') ? rng.pick(['김', '박', '석', '김', '김']) : country.name.includes('백제') ? rng.pick(['부여', '사', '연', '협', '해', '진', '국', '목', '백']) : rng.pick(['고', '을', '명림', '연', '해', '을지'])
-        return { name: sn + rng.pick(f ? SAMGUK_F : SAMGUK_M), sources: ['history_db', 'name_history'], note: '6세기 이후 왕족·귀족은 성을 사용' }
+        const sn = country.name.includes('신라') ? pick(rng, ['김', '박', '석', '김', '김']) : country.name.includes('백제') ? pick(rng, ['부여', '사', '연', '협', '해', '진', '국', '목', '백']) : pick(rng, ['고', '을', '명림', '연', '해', '을지'])
+        return { name: sn + pick(rng, f ? SAMGUK_F : SAMGUK_M), sources: ['history_db', 'name_history'], note: '6세기 이후 왕족·귀족은 성을 사용' }
       }
-      return { name: rng.pick(f ? SAMGUK_F : SAMGUK_M), sources: ['history_db', 'name_history'], note: '삼국사기·금석문의 고유어 이름 방식' }
+      return { name: pick(rng, f ? SAMGUK_F : SAMGUK_M), sources: ['history_db', 'name_history'], note: '삼국사기·금석문의 고유어 이름 방식' }
     }
     case 'nambuk': {
-      if (cls.surname) return { name: rng.pick(['김', '김', '김', '박', '최', '설', '장', '대', '고']) + rng.pick(f ? SAMGUK_F : NAMBUK_ELITE_M), sources: ['history_db', 'name_history'], note: '귀족은 한자식 성명 사용' }
-      return { name: rng.pick(f ? SAMGUK_F : NAMBUK_M), sources: ['history_db', 'name_history'], note: '평민은 성 없이 고유어 이름 (향가·설화 인물 방식)' }
+      if (cls.surname) return { name: pick(rng, ['김', '김', '김', '박', '최', '설', '장', '대', '고']) + pick(rng, f ? SAMGUK_F : NAMBUK_ELITE_M), sources: ['history_db', 'name_history'], note: '귀족은 한자식 성명 사용' }
+      return { name: pick(rng, f ? SAMGUK_F : NAMBUK_M), sources: ['history_db', 'name_history'], note: '평민은 성 없이 고유어 이름 (향가·설화 인물 방식)' }
     }
     case 'goryeo': {
-      if (cls.surname) return { name: surname(rng, false) + rng.pick(f ? JOSEON_YANGBAN_F_AMYEONG : GORYEO_ELITE_M), sources: ['history_db', 'name_history'], note: '귀족·향리는 성씨 사용' }
-      return { name: rng.pick(f ? GORYEO_COMMON_F : GORYEO_COMMON_M), sources: ['name_history'], note: '고려 평민·천민 다수는 성이 없었음' }
+      if (cls.surname) return { name: surname(rng, false) + pick(rng, f ? JOSEON_YANGBAN_F_AMYEONG : GORYEO_ELITE_M), sources: ['history_db', 'name_history'], note: '귀족·향리는 성씨 사용' }
+      return { name: pick(rng, f ? GORYEO_COMMON_F : GORYEO_COMMON_M), sources: ['name_history'], note: '고려 평민·천민 다수는 성이 없었음' }
     }
     case 'joseon1':
     case 'joseon2': {
       if (cls.id === 'yangban' || cls.id === 'jungin') {
         const sn = surname(rng, false)
-        if (f) return { name: `${sn}씨 (아명 ${rng.pick(JOSEON_YANGBAN_F_AMYEONG)})`, sources: ['name_history'], note: '양반가 여성은 족보·호적에 성씨만 기록' }
-        return { name: sn + rng.pick(JOSEON_HANJA_M) + rng.pick(JOSEON_HANJA_M), sources: ['name_history', 'kosis_surname'], note: '항렬자를 넣은 두 글자 한자 이름' }
+        if (f) return { name: `${sn}씨 (아명 ${pick(rng, JOSEON_YANGBAN_F_AMYEONG)})`, sources: ['name_history'], note: '양반가 여성은 족보·호적에 성씨만 기록' }
+        return { name: sn + pick(rng, JOSEON_HANJA_M) + pick(rng, JOSEON_HANJA_M), sources: ['name_history', 'kosis_surname'], note: '항렬자를 넣은 두 글자 한자 이름' }
       }
-      if (cls.id === 'nobi') return { name: rng.pick(f ? JOSEON_NOBI_F : JOSEON_NOBI_M), sources: ['name_history', 'yi_nobi'], note: '노비는 성 없이 호적에 이름만 기록' }
+      if (cls.id === 'nobi') return { name: pick(rng, f ? JOSEON_NOBI_F : JOSEON_NOBI_M), sources: ['name_history', 'yi_nobi'], note: '노비는 성 없이 호적에 이름만 기록' }
       const hasSurname = rng.chance(year < 1600 ? 0.5 : year < 1800 ? 0.7 : 0.9)
-      const given = rng.pick(f ? JOSEON_SANGMIN_F : JOSEON_SANGMIN_M)
+      const given = pick(rng, f ? JOSEON_SANGMIN_F : JOSEON_SANGMIN_M)
       return { name: hasSurname ? `${surname(rng, false)} ${given}` : given, sources: ['name_history', 'kosis_surname'], note: hasSurname ? '상민도 조선 후기로 갈수록 성씨 사용' : '조선 전기 상민 상당수는 성이 없었음' }
     }
     case 'colonial':
-      return { name: surname(rng, false) + rng.pick(decadeList(f ? MODERN_F : MODERN_M, year)), sources: ['kosis_names', 'kosis_surname'], note: '1909년 민적법 이후 전 국민 성명 등록' }
+      return { name: surname(rng, false) + pick(rng, decadeList(f ? MODERN_F : MODERN_M, year)), sources: ['kosis_names', 'kosis_surname'], note: '1909년 민적법 이후 전 국민 성명 등록' }
     case 'modern':
-      if (country.north) return { name: surname(rng, true) + rng.pick(f ? NORTH_F : NORTH_M), sources: ['kdi_nk', 'kosis_surname'], note: '북한 표기 (두음법칙 미적용)' }
-      return { name: surname(rng, false) + rng.pick(decadeList(f ? MODERN_F : MODERN_M, year)), sources: ['kosis_names', 'kosis_surname'], note: `${Math.floor(year / 10) * 10}년대 출생 인기 이름` }
+      if (country.north) return { name: surname(rng, true) + pick(rng, f ? NORTH_F : NORTH_M), sources: ['kdi_nk', 'kosis_surname'], note: '북한 표기 (두음법칙 미적용)' }
+      return { name: surname(rng, false) + pick(rng, decadeList(f ? MODERN_F : MODERN_M, year)), sources: ['kosis_names', 'kosis_surname'], note: `${Math.floor(year / 10) * 10}년대 출생 인기 이름` }
   }
 }

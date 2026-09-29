@@ -23,6 +23,8 @@ export interface PickedRegion {
   snapshotYear: number
   unit: string
   source: string
+  /** 스냅숏 안에서 이 지역의 비중 (0~1) */
+  share: number
 }
 
 /** 출생 연도에 맞는 스냅숏 (적용 범위 안, 자료가 채워진 것) */
@@ -35,7 +37,8 @@ export function snapshotFor(year: number, side?: 'south' | 'north'): RegionSnaps
 
 function fromRow(row: RegionRow, snap: RegionSnapshot): PickedRegion {
   const label = row.now ? `${row.name} (지금의 ${row.now})` : row.name
-  return { province: row.province, name: row.name, now: row.now, label, snapshotYear: snap.year, unit: snap.unit, source: snap.source }
+  const total = snap.rows.reduce((a, r) => a + Math.max(0, r.weight), 0)
+  return { province: row.province, name: row.name, now: row.now, label, snapshotYear: snap.year, unit: snap.unit, source: snap.source, share: total > 0 ? row.weight / total : 1 }
 }
 
 export function pickFromSnapshot(rng: Rng, snap: RegionSnapshot, rows: RegionRow[] = snap.rows): PickedRegion | null {

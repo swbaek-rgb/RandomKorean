@@ -8,6 +8,8 @@ export interface Sourced<T> {
   sources: string[]
   /** 확률 각주 등 보조 설명 */
   note?: string
+  /** 이 결과가 나올 확률 설명 (연한 글씨) */
+  odds?: string
 }
 
 export interface Country {
@@ -74,6 +76,8 @@ export interface Life {
   currentAge: number | null
   /** 이 시대 출생 비중 (출생아 가중 모드 기준) */
   eraShare: number
+  /** 생년 추첨 확률 설명 */
+  yearOdds?: string
   /** 시대 각주: 영아사망률, 15세 생존율 */
   mortalityNote: string
 }
