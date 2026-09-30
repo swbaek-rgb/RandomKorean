@@ -251,7 +251,13 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
   const sibLambda = Math.max(0, tfr(birthYear, !!country.north) - 1) * (tfr(birthYear, !!country.north) > 3 ? 1.05 : 1)
   const familyOdds = `형제 ${family.siblingsBorn}명 ${pct(poissonPmf(family.siblingsBorn, sibLambda))} · 생애 혼인 ${pct(1 - neverMarriedRate(birthYear + 45, sex, !!country.north))}`
   const sAge = survivalTo(ageReached, birthYear, country, cls, sex)
-  const deathOdds = sim.death ? `같은 해 태어난 ${sex === 'M' ? '남자' : '여자'} 중 ${pct(1 - sAge)}가 이 나이 전에 사망` : `이 나이까지 살아 있을 확률 ${pct(sAge)}`
+  const sNext = survivalTo(ageReached + 1, birthYear, country, cls, sex)
+  const who = `같은 해 태어난 ${sex === 'M' ? '남자' : '여자'}`
+  const deathOdds = !sim.death
+    ? `이 나이까지 살아 있을 확률 ${pct(sAge)}`
+    : ageReached === 0
+      ? `${who} 중 ${pct(sAge - sNext)}가 첫돌 전에 사망`
+      : `${who} 중 ${pct(1 - sAge)}가 이 나이 전에, ${pct(sAge - sNext)}가 ${ageReached}세에 사망`
 
   return {
     seed,
