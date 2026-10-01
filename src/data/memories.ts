@@ -219,6 +219,7 @@ function workplace(rng: Rng, g: Group, job: string): string {
   }
   if (/어로|어민|해녀|조개|뱃사공|나루/.test(job)) return rng.pick(['나루터', '갯가'])
   if (/사냥|채집|석기|무두질/.test(job)) return rng.pick(['숲 가장자리', '강가'])
+  if (g === 'prehist' && /농|경작|밭|벼/.test(job)) return '밭머리'
   if (/훈장|서당/.test(job)) return '서당'
   if (/역관|서리|향리|관료|관직|군관|촌주|관인|문반|무반/.test(job)) return '관아'
   if (/보부상|행상|장터|상인|주막/.test(job)) return '장터'
@@ -254,8 +255,17 @@ const JOB_SCENES: JobScenes[] = [
   { test: /불 지킴이|움막|가죽|무두질/, scenes: ['밤새 불을 꺼뜨리지 않았다. 아침에 모두가 아무 말 없이 불 곁에 앉았다.', '큰 짐승 가죽을 처음 혼자 손질했다. 손에 냄새가 며칠 갔다.', '움막 지붕을 고치고 나니 비가 왔다.'], after: ['그 뒤로 불은 늘 내 몫이었다.', '그날 손 냄새는 오래 남았다.'] },
 ]
 const JOB_GENERIC: JobScenes = { test: /./, scenes: ['그날 처음으로 일이 손에 익었다는 것을 느꼈다.', '같이 일하던 사람이 내 이름을 처음 불러 주었다.', '해가 지도록 끝나지 않았고, 그래도 좋았다.', '실수를 했고, 아무도 나무라지 않았다.'], after: ['그 뒤로 오래 그 일을 했다.', '그날의 손끝 감각이 아직 남아 있다.'] }
-function jobScenes(job: string): JobScenes {
-  return JOB_SCENES.find((j) => j.test.test(job)) ?? JOB_GENERIC
+// 선사 농경: 조·기장 밭과 직파 벼. 모내기·소·타작마당은 고려 이후의 것이라 쓰지 않는다
+const FARM_PREHIST: JobScenes = { test: /./, scenes: ['조 이삭이 처음 고개를 숙인 날이었다. 밭 가장자리에 앉아 오래 보았다.', '묵은 밭에 불을 놓았다. 재 냄새가 며칠을 갔다.', '반달돌칼로 이삭을 하나씩 땄다. 손바닥이 쓰렸다.', '가뭄 끝에 비가 왔다. 밭머리에 서서 그냥 맞았다.', '첫 수확한 조로 죽을 끓였다. 무리가 둘러앉았다.'], after: ['땅이 거짓말을 안 한다는 것을 그때 알았다.', '그 뒤로 해마다 같은 일을 했지만 그날만 남았다.'] }
+// 삼국·고려: 논은 있으되 모내기는 드물었으므로 직파·물 대기 장면으로
+const FARM_ANCIENT: JobScenes = { test: /./, scenes: ['씨를 뿌린 논에 물이 차오르는 것을 보았다.', '가뭄 끝에 비가 왔다. 논둑에 서서 그냥 맞았다.', '첫 타작이었다. 낟알이 마당에 쌓이는 것을 오래 보았다.', '소가 처음으로 내 말을 들었다.', '추수 끝난 저녁, 햇곡으로 밥을 지었다.'], after: ['그 뒤로 해마다 같은 일을 했지만 그날만 남았다.', '땅은 거짓말을 안 한다는 말을 그때 믿게 됐다.'] }
+function jobScenes(job: string, g: Group): JobScenes {
+  const found = JOB_SCENES.find((j) => j.test.test(job)) ?? JOB_GENERIC
+  if (found.test.source.startsWith('농|소작')) {
+    if (g === 'prehist') return FARM_PREHIST
+    if (g === 'ancient') return FARM_ANCIENT
+  }
+  return found
 }
 
 /** 1→첫째, 2→둘째 … */
@@ -478,7 +488,7 @@ export function lifeMemories(life: Life): LifeMemories | null {
       break
     }
     default: {
-      const js = jobScenes(job)
+      const js = jobScenes(job, g)
       let startAge = /학생/.test(job) ? rng.int(10, 17) : g === 'modern' ? rng.int(19, 28) : /훈장|관료|관직|향리|의관|의녀|역관|승려|주술사|제사장|촌락장|군장/.test(job) ? rng.int(20, 28) : rng.int(15, 20)
       if (/주부|안주인|살림/.test(job) && f.marriedAt !== undefined) startAge = Math.max(startAge, f.marriedAt)
       age = Math.min(ageReached, js.start ? startAge + rng.int(0, 2) : /학생/.test(job) ? rng.int(startAge, 18) : rng.int(startAge, 50))

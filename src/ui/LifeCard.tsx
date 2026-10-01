@@ -46,7 +46,7 @@ function Row({ label, children, sources, onOpen, note, odds }: { label: string; 
           <span>{children}</span>
           <SourcePill sources={sources} onOpen={onOpen} />
         </div>
-        {odds && <div className="row-odds">확률 · {odds}</div>}
+        {odds && <div className="row-odds">{odds}</div>}
         {note && <div className="row-note">{note}</div>}
       </div>
     </div>
