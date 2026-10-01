@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Icon } from '@iconify/react'
-import closeIcon from '@iconify-icons/solar/close-circle-linear'
-import linkIcon from '@iconify-icons/solar/link-round-angle-linear'
+import closeIcon from '@iconify-icons/material-symbols/close-sharp'
+import linkIcon from '@iconify-icons/material-symbols/link-sharp'
 import { src, type SourceKind } from '../data/sources'
 
 const LABEL: Record<SourceKind, string> = { stat: '실측 통계', estimate: '학술 추정', fiction: '창작' }

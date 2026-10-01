@@ -237,6 +237,12 @@ export function generateLife(seed: number, mode: Mode, fixedYear?: number): Life
   const retireAge = country.north ? (sex === 'M' ? 60 : 55) : 66
   if (!sim.death && ageReached >= retireAge && birthYear >= 1897 && !NO_RETIRE.test(occupation.job)) occupation = { job: `은퇴 · 전직 ${occupation.job}`, sources: occupation.sources }
 
+  // 사인은 직업보다 먼저 정해지므로, '산업재해'는 직업에 맞는 사고로 바꿔 준다
+  if (sim.death && sim.death.cause === '산업재해') {
+    const j = occupation.job
+    sim.death.cause = /농|협동농장|화전|머슴/.test(j) ? '농작업 중 사고 (농기계)' : /어민|해녀|어로|어선/.test(j) ? '조업 중 사고' : /건설|현장|광부|탄광|벌목/.test(j) ? '건설·작업 현장 추락 사고' : /생산직|공장|제조/.test(j) ? '공장 산업재해' : /배달|운전|택시|물류|운수/.test(j) ? '운수사고 (업무 중)' : /주부|학생|사무|회사원|교사|교원|공무원|은퇴|영유아|자영업|가게|프리랜서|개발자|디자이너|연구원|엔지니어|변호사|의사|약사|회계사|간호|서비스|판매|콜센터|공기업|직원|목사|전도사|기자|점원|사장|지배인|간부/.test(j) ? '교통사고' : '작업 중 사고'
+  }
+
   const staple = pickStaple(rng, era.id, birthYear, country, cls)
   const { s1, s15 } = survivalTo15(birthYear, country, sex)
   const mortalityNote = `이 시기 태어난 아이 100명 중 ${Math.round((1 - s1) * 100)}명은 첫돌 전에, ${Math.round((1 - s15) * 100)}명은 15세 전에 죽었습니다.`

@@ -1,7 +1,20 @@
 import { useLayoutEffect, useRef } from 'react'
+import { Icon } from '@iconify/react'
+import type { IconifyIcon } from '@iconify/react'
+import calendarIcon from '@iconify-icons/material-symbols/calendar-month-outline-sharp'
+import userIcon from '@iconify-icons/material-symbols/person-outline-sharp'
+import mapIcon from '@iconify-icons/material-symbols/location-on-outline-sharp'
+import medalIcon from '@iconify-icons/material-symbols/military-tech-outline-sharp'
+import familyIcon from '@iconify-icons/material-symbols/family-restroom-sharp'
+import caseIcon from '@iconify-icons/material-symbols/work-outline-sharp'
+import bowlIcon from '@iconify-icons/material-symbols/rice-bowl-outline-sharp'
+import moonIcon from '@iconify-icons/material-symbols/bedtime-outline-sharp'
+import pulseIcon from '@iconify-icons/material-symbols/monitor-heart-outline-sharp'
 import type { Life } from '../engine/types'
 import { CURRENT_YEAR, formatYear } from '../engine/eras'
 import { SourcePill } from './SourcePill'
+import { Portrait } from './Portrait'
+import { ordinal } from '../data/memories'
 import { eul, euro } from './korean'
 import { gsap, EASE_OUT } from '../motion/gsap'
 import { prefersReduced } from '../motion/reduced'
@@ -9,12 +22,25 @@ import { prefersReduced } from '../motion/reduced'
 interface Props {
   life: Life
   onOpenSources: (ids: string[]) => void
+  /** 초상 이미지 경로 (없으면 초상 칸 없음) */
+  portraitSrc?: string
+  /** 초상 출처 id */
+  portraitSource?: string
+  /** 원본 아래쪽 잘라내기 비율 */
+  portraitTrim?: number
+  /** 확대 배율 */
+  portraitZoom?: number
+  /** 가로 늘리기 배율 */
+  portraitStretch?: number
 }
 
+const ROW_ICONS: Record<string, IconifyIcon> = { 생년: calendarIcon, 이름: userIcon, 거주: mapIcon, 계급: medalIcon, 가족: familyIcon, 직업: caseIcon, 주식: bowlIcon, 사망: moonIcon, 현재: pulseIcon }
+
 function Row({ label, children, sources, onOpen, note, odds }: { label: string; children: React.ReactNode; sources: string[]; onOpen: (ids: string[]) => void; note?: string; odds?: string }) {
+  const icon = ROW_ICONS[label]
   return (
     <div className="row">
-      <div className="row-label">{label}</div>
+      <div className="row-label">{icon && <Icon icon={icon} width={17} className="row-icon" />}<span>{label}</span></div>
       <div className="row-value">
         <div className="row-main">
           <span>{children}</span>
@@ -27,7 +53,7 @@ function Row({ label, children, sources, onOpen, note, odds }: { label: string; 
   )
 }
 
-export function LifeCard({ life, onOpenSources }: Props) {
+export function LifeCard({ life, onOpenSources, portraitSrc, portraitSource = 'portrait_ai', portraitTrim = 0, portraitZoom = 1, portraitStretch = 1 }: Props) {
   const ref = useRef<HTMLElement>(null)
 
   // 서사는 문장 단위로 떠오르고, 상세 행은 시야에 들어올 때 드러난다
@@ -49,7 +75,7 @@ export function LifeCard({ life, onOpenSources }: Props) {
   const fam = life.family.value
   const d = life.death.value
   const sexWord = life.sex === 'M' ? '남자' : '여자'
-  const orderWord = fam.siblingsBorn === 0 ? '외동' : `${fam.siblingsBorn + 1}남매 중 ${fam.birthOrder}째`
+  const orderWord = fam.siblingsBorn === 0 ? '외동' : `${fam.siblingsBorn + 1}남매 중 ${ordinal(fam.birthOrder)}`
   const yearLabel = formatYear(life.birthYear)
 
   const narrative: string[] = []
@@ -81,17 +107,34 @@ export function LifeCard({ life, onOpenSources }: Props) {
 
   return (
     <section ref={ref} className="card">
-      <div className="card-era">
-        <span className="era-name">{life.eraName}</span>
-        <span className="era-year">{yearLabel} 출생</span>
+      <div className="card-era dossier-line">
+        <span>기록 번호 {String(life.seed).padStart(10, '0')}</span>
+        <span>분류 {life.eraName}</span>
+        <span>기록일 {CURRENT_YEAR}년</span>
+        <span>기록자 시대별 통계</span>
+      </div>
+      <div className={`head-grid ${portraitSrc ? 'has-portrait' : ''}`}>
+        {portraitSrc && (
+          <figure className="portrait">
+            <Portrait src={portraitSrc} alt={`${life.name.value} 초상`} trimBottom={portraitTrim} zoom={portraitZoom} stretchX={portraitStretch} />
+            <figcaption><SourcePill sources={[portraitSource]} onOpen={onOpenSources} /></figcaption>
+          </figure>
+        )}
+        <div className="head-text">
+          <h2 className="headline">{life.name.value}</h2>
+          <div className="headline-sub">
+            {yearLabel}{d ? ` — ${formatYear(d.year)} · ${d.age}세` : ` — 현재 · ${life.currentAge}세`} · {c.region.replace(/\s*\(.*\)$/, '')}
+          </div>
+        </div>
       </div>
       <p className="narrative">
         {narrative.map((sent, i) => (
           <span key={i} className="sent">{sent}{i < narrative.length - 1 ? ' ' : ''}</span>
         ))}
       </p>
-      <p className="mortality-note">{life.mortalityNote}</p>
+      <p className="mortality-note">비고 · {life.mortalityNote}</p>
 
+      <div className="section-label">항목</div>
       <div className="rows">
         <Row label="생년" sources={['kosis_pop', 'kwon_shin', 'samguk_pop', 'jeongok']} onOpen={onOpenSources} odds={life.yearOdds} note={life.fixedYear !== undefined ? `직접 고른 생년. 출생아 가중이라면 이 시대에 태어날 확률은 ${(life.eraShare * 100).toFixed(life.eraShare < 0.01 ? 2 : 1)}%` : life.mode === 'uniform' ? `시대 균등 추첨. 출생아 가중이라면 이 시대에 태어날 확률은 ${(life.eraShare * 100).toFixed(life.eraShare < 0.01 ? 2 : 1)}%` : `출생아 가중 추첨. 이 시대 출생 비중 ${(life.eraShare * 100).toFixed(life.eraShare < 0.01 ? 2 : 1)}%`}>
           {yearLabel} · {life.eraName}
@@ -125,6 +168,7 @@ export function LifeCard({ life, onOpenSources }: Props) {
           </Row>
         )}
       </div>
+
     </section>
   )
 }

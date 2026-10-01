@@ -1,15 +1,19 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '@iconify/react'
-import arrowLeft from '@iconify-icons/solar/arrow-left-linear'
-import arrowRight from '@iconify-icons/solar/alt-arrow-right-linear'
-import restartIcon from '@iconify-icons/solar/restart-linear'
-import shareIcon from '@iconify-icons/solar/share-linear'
-import checkIcon from '@iconify-icons/solar/check-circle-linear'
+import arrowLeft from '@iconify-icons/material-symbols/arrow-back-sharp'
+import arrowRight from '@iconify-icons/material-symbols/chevron-right-sharp'
+import restartIcon from '@iconify-icons/material-symbols/refresh-sharp'
+import shareIcon from '@iconify-icons/material-symbols/share-sharp'
+import checkIcon from '@iconify-icons/material-symbols/check-circle-outline-sharp'
 import { generateLife } from './engine/generate'
 import { randomSeed } from './engine/rng'
 import { ERAS } from './engine/eras'
 import type { Life, Mode } from './engine/types'
 import { LifeCard } from './ui/LifeCard'
+import { MemoryCards } from './ui/MemoryCards'
+import { lifeMemories } from './data/memories'
+import { portraitPath } from './data/portraits'
+import bookIcon from '@iconify-icons/material-symbols/menu-book-outline-sharp'
 import { SourceModal } from './ui/SourceModal'
 import { YearReveal } from './ui/YearReveal'
 import { EraStrip } from './ui/EraStrip'
@@ -20,7 +24,6 @@ import { prefersReduced } from './motion/reduced'
 import { useLenis } from './motion/useLenis'
 
 type Step = 'start' | 'year' | 'life'
-
 function readUrl(): { seed: number | null; mode: Mode; year: number | null } {
   const p = new URLSearchParams(location.search)
   const s = p.get('s')
@@ -41,7 +44,7 @@ function writeUrl(seed: number | null, mode: Mode, year: number | null) {
   history.replaceState(null, '', `?${p.toString()}`)
 }
 
-const DEFAULT_ERA_COLOR = '#b3a892'
+const DEFAULT_ERA_COLOR = '#6b6259'
 
 export default function App() {
   const init = useMemo(readUrl, [])
@@ -56,10 +59,13 @@ export default function App() {
   const [revealed, setRevealed] = useState(false)
   const [sources, setSources] = useState<string[] | null>(null)
   const [copied, setCopied] = useState(false)
+  const [showMemory, setShowMemory] = useState(false)
   const screenRef = useRef<HTMLElement>(null)
   const leaving = useRef(false)
 
   const life: Life | null = useMemo(() => (seed === null ? null : generateLife(seed, mode, fixedYear ?? undefined)), [seed, mode, fixedYear])
+  const memories = useMemo(() => (life ? lifeMemories(life) : null), [life])
+  useEffect(() => { setShowMemory(false) }, [seed])
   const tint = life ? ERAS.find((e) => e.id === life.eraId)!.tint : DEFAULT_ERA_COLOR
 
   useLenis(step === 'life')
@@ -149,17 +155,18 @@ export default function App() {
   return (
     <>
       <div className="ink" aria-hidden="true">
-        <div className="ink-glow" />
         <div className="ink-grain" />
-        <div className="ink-vignette" />
       </div>
 
-      <main className="app">
+      <main className="app sheet">
+        <div className="sheet-holes" aria-hidden="true"><span /><span /><span /></div>
         {step === 'start' && (
           <section ref={screenRef} className="screen screen-start" key="start">
-            <div className="eyebrow">한반도 · 4만 년</div>
-            <h1 className="title"><SplitWords text="한반도 생애 시뮬레이터" /></h1>
-            <p className="tagline">4만 년 전부터 2026년까지, 한반도에서 태어난 어떤 한 사람의 삶</p>
+            <div className="masthead">
+              <div className="eyebrow">기록 제1호 · 한반도 · 4만 년</div>
+              <h1 className="title"><SplitWords text="한반도 생애 시뮬레이터" /></h1>
+              <p className="tagline">4만 년 전부터 2026년까지, 한반도에서 태어난 어떤 한 사람의 생애 기록</p>
+            </div>
 
             <EraStrip mode={mode} />
 
@@ -210,15 +217,26 @@ export default function App() {
           <section ref={screenRef} className="screen screen-life" key={`life-${life.seed}`}>
             <header className="life-head">
               <button type="button" className="ghost small" onClick={restart}><Icon icon={arrowLeft} width={16} /> 처음으로</button>
-              <span className="life-title">한반도 생애 시뮬레이터</span>
+              <span className="life-title">한반도 생애 시뮬레이터 · 생애 기록</span>
             </header>
-            <LifeCard life={life} onOpenSources={setSources} />
+            <LifeCard life={life} onOpenSources={setSources} {...(portraitPath(life) ? { portraitSrc: portraitPath(life)!, portraitSource: 'portrait_ai', portraitTrim: 0.07, portraitStretch: 1.2, portraitZoom: life.birthYear >= -108 && life.birthYear < 1897 ? 1.6 : 1 } : {})} />
+
+            {memories && !showMemory && (
+              <div className="memory-cta">
+                <button type="button" className="roll memory-btn" onClick={() => setShowMemory(true)}>
+                  <Icon icon={bookIcon} width={20} style={{ verticalAlign: '-4px' }} /> 이 삶의 기억 보기
+                </button>
+                <p className="memory-cta-help">가장 기억에 남는 하루{life.death.value ? '와 마지막 날' : ''}을 그 사람의 목소리로 읽습니다</p>
+              </div>
+            )}
+            {memories && showMemory && <MemoryCards memories={memories} onOpenSources={setSources} />}
+
             <div className="actions">
               <button type="button" className="roll compact" onClick={pickYear}>다른 삶 살아보기</button>
               {fixedYear !== null && <button type="button" className="ghost" onClick={() => setSeed(randomSeed())}><Icon icon={restartIcon} width={16} /> 같은 생년으로 다시</button>}
               <button type="button" className="ghost" onClick={share}><Icon icon={copied ? checkIcon : shareIcon} width={16} /> {copied ? '링크 복사됨' : '이 삶 공유하기'}</button>
-              <span className="seed">seed {life.seed}</span>
             </div>
+            <p className="seed">seed {life.seed}</p>
             <footer className="foot">
               <p>전근대 수치는 학술 추정치이며, 개인 서사는 통계로 만든 허구입니다. 배지 색: <span className="pill pill-stat pill-static"><span className="pill-kind">통계</span></span> <span className="pill pill-estimate pill-static"><span className="pill-kind">추정</span></span> <span className="pill pill-fiction pill-static"><span className="pill-kind">창작</span></span></p>
             </footer>

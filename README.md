@@ -35,10 +35,11 @@ npm run build    # dist/ 정적 빌드 (타입 검사 포함)
 ## 디자인·모션
 
 - **아트 디렉션** — "먹빛 어둠 속에서 떠오르는 한 사람의 생". 먹(#0b0a09) 바탕에 한지색 글자, 시대마다 다른 빛깔(돌·흙·청동·황토·금·청자·쪽·자주·재·백자)의 광원 하나가 느리게 숨쉰다. 생년이 드러나는 순간 광원이 그 시대의 색으로 바뀐다.
-- **서체** — Nanum Myeongjo (제목·서사·숫자), Pretendard (UI). 둘 다 OFL.
+- **팔레트** — 다크 고정. 어두운 웜그레이 책상 위에 어두운 웜그레이 종이, 아이보리 잉크. 디더링 초상만 밝은 종이 위 어두운 잉크(`--portrait-ink`, `--portrait-paper`)로 남겨 사진 인상을 유지한다.
+- **서체** — Gothic A1 900 (제목), Hahmlet 800 (라벨·배지·버튼·메타), Hahmlet 400 (서사), D2Coding (확률·비고 같은 기록 줄). 모두 OFL. D2Coding은 jsDelivr(noonfonts), 나머지는 Google Fonts.
 - **모션 스택** — GSAP(진입 안무, 단어·문장·행 stagger), Lenis(상세 화면의 유일한 스무스 스크롤 엔진, ScrollTrigger에 연결). `prefers-reduced-motion`이면 안무와 스무스 스크롤을 모두 끄고 최종 상태를 즉시 그린다.
 - **Three.js** — 쓰지 않음. 타이포그래피 중심 컨셉이라 셰이더 캔버스가 정당화되지 않는다.
-- **아이콘** — Solar (Iconify, CC BY 4.0) 오프라인 번들.
+- **아이콘** — Material Symbols Sharp (Iconify, Apache 2.0) 오프라인 번들. 각진 선 아이콘으로 기록 카드 톤에 맞춤.
 - **이미지·아바타·로고** — 없음. 사진 자산 없이 활자와 데이터 그래픽(시대 띠)만 쓴다.
 
 브라우저 검증: `npm run shots` 가 시스템 Chrome을 Playwright로 띄워 데스크톱·모바일·감소 모션 세 조건에서 화면을 `shots/` 에 캡처한다.

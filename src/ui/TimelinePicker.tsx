@@ -89,7 +89,7 @@ export function TimelinePicker({ year, onChange }: Props) {
   return (
     <div className="tl">
       <div className="tl-readout" aria-live="polite">
-        <span className="tl-year" style={{ color: era.tint }}>{formatYear(year)}</span>
+        <span className="tl-year" style={{ ['--tint' as string]: era.tint }}>{formatYear(year)}</span>
         <span className="tl-era">{era.name}</span>
       </div>
       <div

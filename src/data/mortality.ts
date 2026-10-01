@@ -99,14 +99,14 @@ export const EVENTS: HistEvent[] = [
   { name: '병자호란', from: 1636, to: 1637, extra: 0.01, cause: '전쟁·포로', region: ['경기도', '평안도', '황해도', '한성'], sources: ['sillok'] },
   { name: '경신대기근', from: 1670, to: 1671, extra: 0.045, cause: '기근·전염병', lowerClass: 1.8, sources: ['sillok'] },
   { name: '을병대기근', from: 1695, to: 1699, extra: 0.02, cause: '기근·전염병', lowerClass: 1.8, sources: ['sillok'] },
-  { name: '1749년 역병 대유행', from: 1749, to: 1750, extra: 0.02, cause: '역병', sources: ['sillok'] },
-  { name: '1821년 콜레라', from: 1821, to: 1822, extra: 0.015, cause: '콜레라 (괴질)', sources: ['sillok'] },
-  { name: '1859년 콜레라', from: 1859, to: 1860, extra: 0.01, cause: '콜레라', sources: ['sillok'] },
-  { name: '1886년 콜레라', from: 1886, to: 1886, extra: 0.008, cause: '콜레라', sources: ['sillok'] },
+  { name: '기사년 역병 (1749)', from: 1749, to: 1750, extra: 0.02, cause: '역병 (돌림병)', sources: ['sillok'] },
+  { name: '신사년 괴질 (1821)', from: 1821, to: 1822, extra: 0.015, cause: '괴질 (콜레라)', sources: ['sillok'] },
+  { name: '기미년 괴질 (1859)', from: 1859, to: 1860, extra: 0.01, cause: '괴질 (콜레라)', sources: ['sillok'] },
+  { name: '병술년 호열자 (1886)', from: 1886, to: 1886, extra: 0.008, cause: '호열자 (콜레라)', sources: ['sillok'] },
   { name: '동학농민운동·청일전쟁', from: 1894, to: 1895, extra: 0.004, cause: '전투·처형', region: ['전라도', '충청도', '평안도'], maleFighting: 3, sources: ['encykorea'] },
   { name: '의병 전쟁', from: 1907, to: 1910, extra: 0.002, cause: '일본군 토벌', maleFighting: 3, sources: ['encykorea'] },
-  { name: '스페인 독감', from: 1918, to: 1919, extra: 0.008, cause: '독감 (무오년 독감)', sources: ['chosen_sotokufu'] },
-  { name: '1946년 콜레라', from: 1946, to: 1946, extra: 0.003, cause: '콜레라', sources: ['kosis_death'] },
+  { name: '무오년 독감 (1918)', from: 1918, to: 1919, extra: 0.008, cause: '무오년 독감 (돌림감기)', sources: ['chosen_sotokufu'] },
+  { name: '병술년 호열자 (1946)', from: 1946, to: 1946, extra: 0.003, cause: '호열자 (콜레라)', sources: ['kosis_death'] },
   { name: '제주 4·3', from: 1948, to: 1949, extra: 0.03, cause: '토벌·학살', region: ['제주'], sources: ['korea_war'] },
   { name: '한국전쟁', from: 1950, to: 1953, extra: 0.012, cause: '전쟁·폭격·학살', maleFighting: 3, sources: ['korea_war'] },
   { name: '베트남전 파병', from: 1965, to: 1973, extra: 0.0004, cause: '베트남전 전사', country: '대한민국', maleFighting: 8, sources: ['korea_war'] },
@@ -161,9 +161,9 @@ export function pickCause(rng: Rng, age: number, year: number, era: EraId, count
   }
   // 전근대 · 근대
   const src = year < 1897 ? ['coale_demeny', 'sillok'] : ['chosen_sotokufu']
-  if (age < 1) return { cause: rng.pick(['신생아 감염 (배꼽 파상풍)', '설사병', '폐렴', '출산 중 사망', '영양 부족', year > 1800 ? '천연두 (마마)' : '경기 (경풍)']), sources: src }
-  if (age < 15) return { cause: rng.weighted([{ v: '천연두 (마마)', w: 25 }, { v: '홍역', w: 20 }, { v: '이질·설사병', w: 20 }, { v: '폐렴', w: 10 }, { v: '익사', w: 5 }, { v: '장티푸스 (염병)', w: 8 }, { v: '기근', w: 7 }, { v: '화상·낙상', w: 5 }]), sources: src }
-  if (age < 45) return { cause: rng.weighted([{ v: '결핵 (노채)', w: 18 }, { v: '장티푸스 (염병)', w: 15 }, { v: '이질', w: 8 }, { v: '사고 (낙마·익사·화재)', w: f ? 4 : 10 }, { v: '폭력·형벌', w: f ? 1 : 5 }, { v: '역병', w: 10 }, { v: '학질 (말라리아)', w: 6 }, { v: '기근', w: 5 }]), sources: src }
-  if (age < 65) return { cause: rng.weighted([{ v: '중풍 (뇌졸중)', w: 20 }, { v: '결핵', w: 15 }, { v: '위장병 (체증·적취)', w: 15 }, { v: '폐렴', w: 12 }, { v: '역병', w: 12 }, { v: '장티푸스', w: 8 }, { v: '학질', w: 5 }, { v: '기근', w: 5 }, { v: '종기 (등창)', w: 8 }]), sources: src }
+  if (age < 1) return { cause: rng.pick(['신생아 감염 (배꼽 파상풍)', '설사병', '폐렴', '출산 중 사망', '영양 부족', year > 1800 ? '마마 (천연두)' : '경기 (경풍)']), sources: src }
+  if (age < 15) return { cause: rng.weighted([{ v: '마마 (천연두)', w: 25 }, { v: '홍역', w: 20 }, { v: '이질·설사병', w: 20 }, { v: '폐렴', w: 10 }, { v: '익사', w: 5 }, { v: '염병 (장티푸스)', w: 8 }, { v: '기근', w: 7 }, { v: '화상·낙상', w: 5 }]), sources: src }
+  if (age < 45) return { cause: rng.weighted([{ v: '노채 (결핵)', w: 18 }, { v: '염병 (장티푸스)', w: 15 }, { v: '이질', w: 8 }, { v: '사고 (낙마·익사·화재)', w: f ? 4 : 10 }, { v: '폭력·형벌', w: f ? 1 : 5 }, { v: '역병', w: 10 }, { v: '학질 (말라리아)', w: 6 }, { v: '기근', w: 5 }]), sources: src }
+  if (age < 65) return { cause: rng.weighted([{ v: '중풍 (뇌졸중)', w: 20 }, { v: '노채 (결핵)', w: 15 }, { v: '위장병 (체증·적취)', w: 15 }, { v: '폐렴', w: 12 }, { v: '역병', w: 12 }, { v: '염병 (장티푸스)', w: 8 }, { v: '학질', w: 5 }, { v: '기근', w: 5 }, { v: '종기 (등창)', w: 8 }]), sources: src }
   return { cause: rng.weighted([{ v: '노환', w: 40 }, { v: '중풍 (뇌졸중)', w: 20 }, { v: '폐렴', w: 15 }, { v: '위장병', w: 10 }, { v: '역병', w: 8 }, { v: '추위 (겨울)', w: 7 }]), sources: src }
 }

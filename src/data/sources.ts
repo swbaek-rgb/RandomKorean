@@ -270,6 +270,20 @@ export const SOURCES: Record<string, Source> = {
     kind: 'stat',
     note: '북한이 공개한 두 번째 센서스. 도·시·군 단위 인구. 1944년 국세조사 이후 유일한 군 단위 자료.',
   },
+  memory_fiction: {
+    id: 'memory_fiction',
+    title: '기억 장면 · 창작',
+    org: '이 사이트',
+    kind: 'fiction',
+    note: '나이, 가족 구성, 직업, 사인, 지역, 계절 같은 사실은 위 카드의 데이터에서 가져오고, 장면과 감각 묘사만 시대별 어휘표로 지어냈다.',
+  },
+  portrait_ai: {
+    id: 'portrait_ai',
+    title: '초상 · AI 생성 (시대·성별·계층·나이대 묶음)',
+    org: '이 사이트',
+    kind: 'fiction',
+    note: '실존 인물이 아닌 AI 생성 얼굴. 시대군 6 × 성별 2 × 계층 3 × 나이대 4 × 변형 2 = 288묶음 중 이 삶의 조건에 맞는 것을 시드로 고르고, 1비트 디더링으로 잉크·종이 두 색만 남겼다. 생성은 FLUX 또는 Gemini 이미지 모델로 했고, 복식을 프롬프트로 지정했으나 고증이 정확하지 않을 수 있다. 현대 남한 성인 남성의 안경 여부는 통계를 반영하지 않은 임의 선택이다.',
+  },
   fiction_name: {
     id: 'fiction_name',
     title: '기록 없음 · 창작',

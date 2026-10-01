@@ -35,10 +35,9 @@ export function YearReveal({ year, eraName, tint, onDone }: Props) {
       setSettled(true)
       if (!reduced) {
         gsap.timeline()
-          .fromTo(el.querySelector('.reveal-year'), { scale: 0.965, filter: 'blur(6px)' }, { scale: 1, filter: 'blur(0px)', color: tint, duration: 0.9, ease: EASE_OUT })
+          .fromTo(el.querySelector('.reveal-year'), { scale: 0.965, filter: 'blur(6px)' }, { scale: 1, filter: 'blur(0px)', duration: 0.9, ease: EASE_OUT })
           .fromTo(el.querySelector('.reveal-era'), { opacity: 0, y: 8, filter: 'blur(6px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.7, ease: EASE_OUT }, '-=0.55')
       } else {
-        gsap.set(el.querySelector('.reveal-year'), { color: tint })
         gsap.set(el.querySelector('.reveal-era'), { opacity: 1 })
       }
       doneRef.current()

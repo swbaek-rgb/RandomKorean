@@ -13,7 +13,7 @@ export function SourcePill({ sources, onOpen }: Props) {
   const kinds = sources.map((id) => src(id).kind)
   const kind: SourceKind = kinds.includes('stat') ? 'stat' : kinds.includes('estimate') ? 'estimate' : 'fiction'
   const first = src(sources[0])
-  const org = first.org.split(/[ (·]/)[0]
+  const org = first.org.length <= 6 ? first.org : first.org.split(/[ (·]/)[0]
   return (
     <button type="button" className={`pill pill-${kind}`} onClick={() => onOpen(sources)} title="출처 보기">
       <span className="pill-kind">{LABEL[kind]}</span>
